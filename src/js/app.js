@@ -10,7 +10,9 @@
 // Finding complete sets of brackets within the garble on one row either removes incorrect/dud words or resets your attempts
 // Successfully hacking a terminal may allow one to: access information, disable or enable turrets or spotlights, alarm systems, and various other defenses or traps, open locked doors or safes.
 
-// VARS + GLOBALS
+// VARS + GLOBALS + IMPORTS
+
+import { generate } from "random-words";
 
 const SPECIAL_CHARACTERS = [
   "!",
@@ -100,7 +102,9 @@ const multipleRandomNumberGenerator = (max, length) => {
     throw new Error("Length must be a non-negative non-zero number");
 
   if (max < length)
-    throw new Error(`Cannot get ${n} distinct values from ${max} options!`);
+    throw new Error(
+      `Cannot get ${length} distinct values from ${max} options!`,
+    );
 
   // Generate an array of values from 0 to max (this ensures that there won't be any duplicate values)
 
@@ -115,6 +119,16 @@ const multipleRandomNumberGenerator = (max, length) => {
   // Return only a chunk of the values matching length
   return values.slice(0, length);
 };
+
+/**
+ * Generates an array of random words of a given length
+ *
+ * @param {number} max - The maximum number of words to generate
+ * @param {number} length - The length of the words
+ * @returns {string[]} An array of words
+ */
+const generateRandomWords = (max, length) =>
+  generate({ exactly: max, minLength: length, maxLength: length });
 
 /**
  * Generates an array of random special characters.
@@ -148,7 +162,10 @@ const generateHackablePuzzle = () => {
     PASSWORD_FREQUENCY,
   );
 
-  console.log(garble, passwordPositions);
+  // Generate 20 random 5 letters words to act as either the password or dud
+  const passwords = generateRandomWords(PASSWORD_FREQUENCY, PASSWORD_LENGTH);
+
+  console.log(garble, passwordPositions, passwords);
 };
 
 // Initialize the terminal on DOMContentLoaded
