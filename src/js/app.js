@@ -142,6 +142,13 @@ const generateGarble = (length) => {
   return garble;
 };
 
+const getRandomHex = (size) =>
+  Array.from({ length: size }, () =>
+    Math.floor(Math.random() * 16)
+      .toString(16)
+      .toUpperCase(),
+  ).join("");
+
 // MAIN FUNCTIONS
 
 const generateHackablePuzzle = () => {
@@ -186,6 +193,14 @@ const displayPuzzle = (puzzle) => {
 
     const row = document.createElement("div");
 
+    // Every row must start with a random hexadecimal number
+    const randomHexadecimal = getRandomHex(4);
+
+    const leadingHexadecimal = document.createElement("span");
+    leadingHexadecimal.innerHTML = `0x${randomHexadecimal} `;
+
+    row.appendChild(leadingHexadecimal);
+
     // Create a span for each character in each row
     for (let j = 0; j < chunk.length; j++) {
       const span = document.createElement("span");
@@ -201,6 +216,14 @@ const displayPuzzle = (puzzle) => {
 
         // Set attribute for grouping and event listeners
         span.dataset.password = password || previousSeenPassword;
+
+        span.classList.add(
+          "cursor-pointer",
+          "transition",
+          "duration-150",
+          "ease-linear",
+          "uppercase",
+        );
       }
 
       row.appendChild(span);
@@ -212,9 +235,42 @@ const displayPuzzle = (puzzle) => {
   terminalScreen.appendChild(fragment);
 };
 
+const handlePasswordHover = (e, hovering) => {
+  const target = e.target;
+
+  if (!target.hasAttribute("data-password")) return;
+
+  // If hovering over a password
+  const password = target.dataset.password;
+
+  // Get all the character spans
+  const relatedSpans = Array.from(
+    document.querySelectorAll(`[data-password=${password}]`),
+  );
+
+  // Add or remove hovering classes
+  if (hovering) {
+    relatedSpans.forEach((span) =>
+      span.classList.add("bg-[#5bf870]", "text-[#05321e]"),
+    );
+  } else {
+    relatedSpans.forEach((span) =>
+      span.classList.remove("bg-[#5bf870]", "text-[#05321e]"),
+    );
+  }
+};
+
 // Initialize the terminal on DOMContentLoaded
 document.addEventListener("DOMContentLoaded", () => {
   const puzzle = generateHackablePuzzle();
 
   displayPuzzle(puzzle);
 });
+
+// Handle hovering over a potential password
+terminalScreen.addEventListener("mouseover", (e) =>
+  handlePasswordHover(e, true),
+);
+terminalScreen.addEventListener("mouseout", (e) =>
+  handlePasswordHover(e, false),
+);
