@@ -10,6 +10,12 @@
 // Finding complete sets of brackets within the garble on one row either removes incorrect/dud words or resets your attempts
 // Successfully hacking a terminal may allow one to: access information, disable or enable turrets or spotlights, alarm systems, and various other defenses or traps, open locked doors or safes.
 
+// TODO:
+// - typing animation
+// - updated visuals?
+// - login terminal
+// - better success screen
+
 // VARS + GLOBALS + IMPORTS
 
 import { generate } from "random-words";
@@ -257,8 +263,6 @@ const checkWordLikeness = (guess, target) => {
     if (guess[i] === target[i]) likeness++;
   }
 
-  console.log(guess, target, likeness);
-
   return likeness;
 };
 
@@ -300,12 +304,17 @@ const handlePasswordGuess = (e, puzzle) => {
 
   const selectedPassword = target.dataset.password;
 
-  // Check that they didn't select the correct password
-
-  // TODO: add winning section
-
+  // Add success message if they guessed correctly
   if (selectedPassword === correctPassword) {
-    console.log("YOU WIN!");
+    const successMessage = document.createElement("div");
+    successMessage.innerHTML = "Terminal unlocked";
+    terminalOutput.append(successMessage);
+
+    const restartButton = document.createElement("button");
+    restartButton.innerHTML = "Click to restart";
+    restartButton.id = "restartButton";
+
+    terminalOutput.append(restartButton);
 
     return;
   }
