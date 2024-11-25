@@ -20,6 +20,8 @@ const attemptsCounter = document.getElementById("attempts");
 
 let attemptCount = 4;
 
+let hoverListener, outListener, clickListener;
+
 const SPECIAL_CHARACTERS = [
   "!",
   "@",
@@ -255,6 +257,8 @@ const checkWordLikeness = (guess, target) => {
     if (guess[i] === target[i]) likeness++;
   }
 
+  console.log(guess, target, likeness);
+
   return likeness;
 };
 
@@ -336,27 +340,68 @@ const handlePasswordGuess = (e, puzzle) => {
     lockout.innerHTML = "Terminal locked";
 
     terminalOutput.appendChild(lockout);
+
+    const restartButton = document.createElement("button");
+    restartButton.innerHTML = "Click to restart";
+    restartButton.id = "restartButton";
+
+    terminalOutput.append(restartButton);
   }
 };
 
-// Initialize the terminal on DOMContentLoaded
-document.addEventListener("DOMContentLoaded", () => {
+const resetGame = () => {
+  resetEventListeners();
+
+  terminalScreen.innerHTML = "";
+  terminalOutput.innerHTML = "";
+  // Manually reset counter
+  attemptsCounter.innerHTML = `
+  <div class="size-4 bg-[#5bf870]"></div>
+  <div class="size-4 bg-[#5bf870]"></div>
+  <div class="size-4 bg-[#5bf870]"></div>
+  <div class="size-4 bg-[#5bf870]"></div>`;
+
+  attemptCount = 4;
+
+  initializeGame();
+};
+
+const initializeGame = () => {
   const puzzle = generateHackablePuzzle();
 
   // Display the puzzle after it has been generated
   displayPuzzle(puzzle);
 
-  // Handle hovering over a potential password
-  terminalScreen.addEventListener("mouseover", (e) =>
-    handlePasswordHover(e, true),
-  );
+  // Add appropriate event listeners
+  initEventListeners(puzzle);
 
-  terminalScreen.addEventListener("mouseout", (e) =>
-    handlePasswordHover(e, false),
-  );
+  return puzzle;
+};
 
-  // Handle a guess
-  terminalScreen.addEventListener("click", (e) =>
-    handlePasswordGuess(e, puzzle),
-  );
+// Remove any event listeners
+const resetEventListeners = () => {
+  terminalScreen.removeEventListener("mouseover", hoverListener);
+  terminalScreen.removeEventListener("mouseout", outListener);
+  terminalScreen.removeEventListener("click", clickListener);
+};
+
+// Add all event listeners needed for the game
+const initEventListeners = (puzzle) => {
+  hoverListener = (e) => handlePasswordHover(e, true);
+  outListener = (e) => handlePasswordHover(e, false);
+  clickListener = (e) => handlePasswordGuess(e, puzzle);
+
+  terminalScreen.addEventListener("mouseover", hoverListener);
+  terminalScreen.addEventListener("mouseout", outListener);
+  terminalScreen.addEventListener("click", clickListener);
+};
+
+// Initialize the terminal on DOMContentLoaded
+document.addEventListener("DOMContentLoaded", () => {
+  initializeGame();
+});
+
+// Handle game resets
+document.addEventListener("click", (e) => {
+  if (e.target.id === "restartButton") resetGame();
 });
