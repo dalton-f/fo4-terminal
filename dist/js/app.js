@@ -281,6 +281,22 @@ var handlePasswordGuess = function handlePasswordGuess(e, puzzle) {
         y: 0.6
       }
     });
+    (0,canvas_confetti__WEBPACK_IMPORTED_MODULE_0__["default"])({
+      angle: randomNumberGenerator(125, 55),
+      spread: randomNumberGenerator(70, 50),
+      particleCount: randomNumberGenerator(100, 50),
+      origin: {
+        y: 0.6
+      }
+    });
+    (0,canvas_confetti__WEBPACK_IMPORTED_MODULE_0__["default"])({
+      angle: randomNumberGenerator(125, 55),
+      spread: randomNumberGenerator(70, 50),
+      particleCount: randomNumberGenerator(100, 50),
+      origin: {
+        y: 0.6
+      }
+    });
     return;
   }
 
