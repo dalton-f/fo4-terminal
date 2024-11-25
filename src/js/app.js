@@ -142,7 +142,13 @@ const generateGarble = (length) => {
   return garble;
 };
 
-const getRandomHex = (size) =>
+/**
+ * Generates a random hexadecimal number of a given size
+ *
+ * @param {number} size - The length of the hexadecimal value to generate
+ * @returns {string} A random hexadecimal value
+ */
+const getRandomHexadecimal = (size) =>
   Array.from({ length: size }, () =>
     Math.floor(Math.random() * 16)
       .toString(16)
@@ -194,12 +200,12 @@ const displayPuzzle = (puzzle) => {
     const row = document.createElement("div");
 
     // Every row must start with a random hexadecimal number
-    const randomHexadecimal = getRandomHex(4);
+    const randomHexadecimal = getRandomHexadecimal(4);
 
-    const leadingHexadecimal = document.createElement("span");
-    leadingHexadecimal.innerHTML = `0x${randomHexadecimal} `;
+    const hexadecimalPrefix = document.createElement("span");
+    hexadecimalPrefix.innerHTML = `0x${randomHexadecimal} `;
 
-    row.appendChild(leadingHexadecimal);
+    row.appendChild(hexadecimalPrefix);
 
     // Create a span for each character in each row
     for (let j = 0; j < chunk.length; j++) {
@@ -258,6 +264,16 @@ const handlePasswordHover = (e, hovering) => {
       span.classList.remove("bg-[#5bf870]", "text-[#05321e]"),
     );
   }
+};
+
+const checkWordLikeness = (guess, target) => {
+  let likeness = 0;
+
+  for (let i = 0; i < target.length; i++) {
+    if (guess[i] === target[i]) likeness++;
+  }
+
+  return likeness;
 };
 
 // Initialize the terminal on DOMContentLoaded
