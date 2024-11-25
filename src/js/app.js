@@ -14,7 +14,11 @@
 
 import { generate } from "random-words";
 
-const terminalScreen = document.getElementById("output");
+const terminalScreen = document.getElementById("terminal-screen");
+const terminalOutput = document.getElementById("terminal-output");
+const attemptsCounter = document.getElementById("attempts");
+
+let attemptCount = 4;
 
 const SPECIAL_CHARACTERS = [
   "!",
@@ -171,6 +175,9 @@ const generateHackablePuzzle = () => {
   // Generate 20 random 5 letters words to act as either the password or dud
   const passwords = generateRandomWords(PASSWORD_FREQUENCY, PASSWORD_LENGTH);
 
+  const correctPassword =
+    passwords[randomNumberGenerator(passwords.length - 1)];
+
   // Use the passwords and their randomly generated positions to add them into the output
   for (let i = 0; i < passwordPositions.length; i++) {
     const targetIndex = passwordPositions[i];
@@ -182,7 +189,7 @@ const generateHackablePuzzle = () => {
     }
   }
 
-  return { output, passwordPositions, passwords };
+  return { output, passwordPositions, passwords, correctPassword };
 };
 
 const displayPuzzle = (puzzle) => {
@@ -241,6 +248,16 @@ const displayPuzzle = (puzzle) => {
   terminalScreen.appendChild(fragment);
 };
 
+const checkWordLikeness = (guess, target) => {
+  let likeness = 0;
+
+  for (let i = 0; i < target.length; i++) {
+    if (guess[i] === target[i]) likeness++;
+  }
+
+  return likeness;
+};
+
 const handlePasswordHover = (e, hovering) => {
   const target = e.target;
 
@@ -266,27 +283,80 @@ const handlePasswordHover = (e, hovering) => {
   }
 };
 
-const checkWordLikeness = (guess, target) => {
-  let likeness = 0;
+const handlePasswordGuess = (e, puzzle) => {
+  const target = e.target;
 
-  for (let i = 0; i < target.length; i++) {
-    if (guess[i] === target[i]) likeness++;
+  // If the user clicked on a password
+  if (!target.hasAttribute("data-password")) return;
+
+  // And has attempts left
+  if (attemptCount === 0) return;
+
+  const { correctPassword } = puzzle;
+
+  const selectedPassword = target.dataset.password;
+
+  // Check that they didn't select the correct password
+
+  // TODO: add winning section
+
+  if (selectedPassword === correctPassword) {
+    console.log("YOU WIN!");
+
+    return;
   }
 
-  return likeness;
+  // Get likeness
+  const likeness = checkWordLikeness(selectedPassword, correctPassword);
+
+  const guess = document.createElement("div");
+  const response = document.createElement("div");
+  const likenessResponse = document.createElement("div");
+
+  // Generate the three responses
+  guess.innerHTML = `>${selectedPassword}`;
+  response.innerHTML = ">Entry denied";
+  likenessResponse.innerHTML = `>Likeness=${likeness}`;
+
+  guess.classList.add("uppercase");
+
+  // Append them
+  terminalOutput.appendChild(guess);
+  terminalOutput.appendChild(response);
+  terminalOutput.appendChild(likenessResponse);
+
+  attemptCount -= 1;
+
+  // Delete the last child of the attempt squares
+  attemptsCounter.removeChild(attemptsCounter.lastElementChild);
+
+  if (attemptCount === 0) {
+    const lockout = document.createElement("div");
+
+    lockout.innerHTML = "Terminal locked";
+
+    terminalOutput.appendChild(lockout);
+  }
 };
 
 // Initialize the terminal on DOMContentLoaded
 document.addEventListener("DOMContentLoaded", () => {
   const puzzle = generateHackablePuzzle();
 
+  // Display the puzzle after it has been generated
   displayPuzzle(puzzle);
-});
 
-// Handle hovering over a potential password
-terminalScreen.addEventListener("mouseover", (e) =>
-  handlePasswordHover(e, true),
-);
-terminalScreen.addEventListener("mouseout", (e) =>
-  handlePasswordHover(e, false),
-);
+  // Handle hovering over a potential password
+  terminalScreen.addEventListener("mouseover", (e) =>
+    handlePasswordHover(e, true),
+  );
+
+  terminalScreen.addEventListener("mouseout", (e) =>
+    handlePasswordHover(e, false),
+  );
+
+  // Handle a guess
+  terminalScreen.addEventListener("click", (e) =>
+    handlePasswordGuess(e, puzzle),
+  );
+});

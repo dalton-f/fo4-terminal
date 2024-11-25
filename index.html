@@ -18,8 +18,33 @@
   </head>
   <body>
     <main>
-      <section>
-        <div class="columns-2 text-2xl text-[#5bf870]" id="output"></div>
+      <section class="p-10">
+        <!-- Monitor -->
+        <div class="mx-auto w-full max-w-screen-md">
+          <!-- Screen -->
+          <div class="flex flex-col gap-4 text-2xl text-[#5bf870]">
+            <p>Welcome to ROBCO Industries (TM) Termlink</p>
+            <p>Password Required</p>
+
+            <div class="flex items-center gap-4">
+              <p>Attempts Remaining:</p>
+
+              <div class="flex items-center gap-4" id="attempts">
+                <div class="size-4 bg-[#5bf870]"></div>
+                <div class="size-4 bg-[#5bf870]"></div>
+                <div class="size-4 bg-[#5bf870]"></div>
+                <div class="size-4 bg-[#5bf870]"></div>
+              </div>
+            </div>
+
+            <!-- Terminal -->
+            <div class="flex gap-8">
+              <div class="columns-2 gap-x-[1ch]" id="terminal-screen"></div>
+
+              <div id="terminal-output"></div>
+            </div>
+          </div>
+        </div>
       </section>
     </main>
   </body>
