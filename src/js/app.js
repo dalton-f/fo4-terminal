@@ -53,41 +53,21 @@ const PASSWORD_FREQUENCY = 20;
 // UTIL FUNCTIONS
 
 /**
- * Shuffles an array in-place using the Fisher-Yates shuffle algorithm.
- *
- * @param {number[]} array - The input array to be shuffled.
- * @returns {number[]} The same shuffled array.
- * @see https://bost.ocks.org/mike/shuffle/
- */
-const fisherYatesShuffle = (array) => {
-  let m = array.length;
-
-  // While there are elements left to shuffle where m represents the remaining elements left to shuffle
-  while (m) {
-    // Pick a random remaining element
-    const index = randomNumberGenerator(m--);
-
-    // Swap it with the current element to shuffle the array in-place
-    [array[m], array[index]] = [array[index], array[m]];
-  }
-
-  // Return the shuffled array in O(max) time
-  return array;
-};
-
-/**
- * Generates a random number from 0 to max
+ * Generates a random number from min (inclusive) to max (inclusive)
  *
  * @param {number} max - The maximum number to generate
+ * @param {number} min - The minimum number to generate
  * @returns {number} A random number from 0 to max
  * @throws {Error} If the max is not a positive numerical value.
  */
-const randomNumberGenerator = (max) => {
+const randomNumberGenerator = (max, min = 0) => {
   if (!Number.isFinite(max) || max <= 0) {
-    throw new Error("Length must be a non-negative non-zero numerical value");
+    throw new Error(
+      "Maximum value must be a non-negative non-zero numerical value",
+    );
   }
 
-  return Math.floor(Math.random() * max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
 /**
@@ -95,9 +75,10 @@ const randomNumberGenerator = (max) => {
  *
  * @param {number} max - The maximum number to generate
  * @param {number} length - The maximum numbers to generate
+ * @param {number} [minDifference = 0] - The minimum difference between each number.
  * @returns {number[]} A random array of numbers matching length
  */
-const multipleRandomNumberGenerator = (max, length) => {
+const multipleRandomNumberGenerator = (max, length, minDifference = 0) => {
   if (length < 0)
     throw new Error("Length must be a non-negative non-zero number");
 
@@ -106,18 +87,26 @@ const multipleRandomNumberGenerator = (max, length) => {
       `Cannot get ${length} distinct values from ${max} options!`,
     );
 
-  // Generate an array of values from 0 to max (this ensures that there won't be any duplicate values)
+  // Use a set to avoid duplicate values
+  const values = new Set();
 
-  let values = [];
+  // While the set is not fully populated
+  while (values.size < length) {
+    // Generate random values to add to it
+    const randomValue = randomNumberGenerator(max);
 
-  for (let i = 0; i < max; i++) {
-    values.push(i);
+    // Ensure the minDifference spacing is respected before adding values
+    if (
+      [...values].every(
+        (value) => Math.abs(value - randomValue) >= minDifference,
+      )
+    ) {
+      values.add(randomValue);
+    }
   }
 
-  values = fisherYatesShuffle(values);
-
-  // Return only a chunk of the values matching length
-  return values.slice(0, length);
+  // Return an array of spaced values
+  return [...values];
 };
 
 /**
@@ -144,7 +133,8 @@ const generateGarble = (length) => {
 
   const garble = Array.from(
     { length: length },
-    () => SPECIAL_CHARACTERS[randomNumberGenerator(SPECIAL_CHARACTERS.length)],
+    () =>
+      SPECIAL_CHARACTERS[randomNumberGenerator(SPECIAL_CHARACTERS.length - 1)],
   );
 
   return garble;
@@ -153,19 +143,31 @@ const generateGarble = (length) => {
 // MAIN FUNCTIONS
 
 const generateHackablePuzzle = () => {
-  // Generate an array of length 384 filled wth special characters for the bulk of the puzzle
-  const garble = generateGarble(TOTAL_ROWS * TOTAL_CHARACTERS_PER_ROW);
+  // Generate an array of length 384 filled wth special characters for the bulk/base of the puzzle output
+  const output = generateGarble(TOTAL_ROWS * TOTAL_CHARACTERS_PER_ROW);
 
-  // Generate an array of unqiue random index positions from 0 to 384 for the positions of the passwords within the puzzle
+  // Generate an array of unqiue random index positions from 0 to 384 - password length (so no password gets cut off) for the positions of the passwords within the puzzle
   const passwordPositions = multipleRandomNumberGenerator(
-    TOTAL_ROWS * TOTAL_CHARACTERS_PER_ROW,
+    TOTAL_ROWS * TOTAL_CHARACTERS_PER_ROW - PASSWORD_LENGTH,
     PASSWORD_FREQUENCY,
+    PASSWORD_LENGTH + 1,
   );
 
   // Generate 20 random 5 letters words to act as either the password or dud
   const passwords = generateRandomWords(PASSWORD_FREQUENCY, PASSWORD_LENGTH);
 
-  console.log(garble, passwordPositions, passwords);
+  // Use the passwords and their randomly generated positions to add them into the output
+  for (let i = 0; i < passwordPositions.length; i++) {
+    const targetIndex = passwordPositions[i];
+    const targetPassword = passwords[i];
+
+    // Add each individual letter of the password to the array by splitting it up and deleting one character from the array to maintain the 384 length
+    for (let j = 0; j < targetPassword.length; j++) {
+      output.splice(targetIndex + j, 1, targetPassword[j]);
+    }
+  }
+
+  console.log(output);
 };
 
 // Initialize the terminal on DOMContentLoaded
