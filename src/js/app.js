@@ -24,6 +24,8 @@ const terminalScreen = document.getElementById("terminal-screen");
 const terminalOutput = document.getElementById("terminal-output");
 const attemptsCounter = document.getElementById("attempts");
 
+const difficultySelector = document.getElementById("difficultySelector");
+
 let attemptCount = 4;
 
 let hoverListener, outListener, clickListener;
@@ -61,8 +63,8 @@ const SPECIAL_CHARACTERS = [
 const TOTAL_CHARACTERS_PER_ROW = 12;
 const TOTAL_ROWS = 32;
 
-const PASSWORD_LENGTH = 5;
-const PASSWORD_FREQUENCY = 20;
+let passwordLength = 5;
+let passwordFrequency = 20;
 
 // UTIL FUNCTIONS
 
@@ -175,13 +177,13 @@ const generateHackablePuzzle = () => {
 
   // Generate an array of unqiue random index positions from 0 to 384 - password length (so no password gets cut off) for the positions of the passwords within the puzzle
   const passwordPositions = multipleRandomNumberGenerator(
-    TOTAL_ROWS * TOTAL_CHARACTERS_PER_ROW - PASSWORD_LENGTH,
-    PASSWORD_FREQUENCY,
-    PASSWORD_LENGTH + 1,
+    TOTAL_ROWS * TOTAL_CHARACTERS_PER_ROW - passwordLength,
+    passwordFrequency,
+    passwordLength + 1,
   );
 
   // Generate 20 random 5 letters words to act as either the password or dud
-  const passwords = generateRandomWords(PASSWORD_FREQUENCY, PASSWORD_LENGTH);
+  const passwords = generateRandomWords(passwordFrequency, passwordLength);
 
   const correctPassword =
     passwords[randomNumberGenerator(passwords.length - 1)];
@@ -405,12 +407,29 @@ const initEventListeners = (puzzle) => {
   terminalScreen.addEventListener("click", clickListener);
 };
 
-// Initialize the terminal on DOMContentLoaded
-document.addEventListener("DOMContentLoaded", () => {
-  initializeGame();
-});
-
 // Handle game resets
 document.addEventListener("click", (e) => {
   if (e.target.id === "restartButton") resetGame();
+});
+
+// Reset game if difficulty changes
+difficultySelector.addEventListener("change", () => {
+  const selectedDifficulty = difficultySelector.value;
+
+  switch (selectedDifficulty) {
+    case "easy":
+      passwordLength = 4;
+      passwordFrequency = 10;
+      break;
+    case "normal":
+      passwordLength = 5;
+      passwordFrequency = 20;
+      break;
+    case "hard":
+      passwordLength = 7;
+      passwordFrequency = 15;
+      break;
+  }
+
+  resetGame();
 });

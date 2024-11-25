@@ -18,9 +18,17 @@
   </head>
   <body>
     <main>
-      <section class="p-16">
+      <section class="flex flex-col gap-8 p-16">
+        <div>
+          <select id="difficultySelector" class="px-4 py-2">
+            <option value="" disabled selected>Select a difficulty</option>
+            <option value="easy">Easy</option>
+            <option value="normal">Normal</option>
+            <option value="hard">Hard</option>
+          </select>
+        </div>
         <!-- Monitor -->
-        <div class="mx-auto w-full max-w-screen-md">
+        <div>
           <!-- Screen -->
           <div class="flex flex-col gap-4 text-2xl text-[#5bf870]">
             <p>Welcome to ROBCO Industries (TM) Termlink</p>
