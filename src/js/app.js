@@ -327,20 +327,6 @@ const handlePasswordGuess = (e, puzzle) => {
       origin: { y: 0.6 },
     });
 
-    confetti({
-      angle: randomNumberGenerator(125, 55),
-      spread: randomNumberGenerator(70, 50),
-      particleCount: randomNumberGenerator(100, 50),
-      origin: { y: 0.6 },
-    });
-
-    confetti({
-      angle: randomNumberGenerator(125, 55),
-      spread: randomNumberGenerator(70, 50),
-      particleCount: randomNumberGenerator(100, 50),
-      origin: { y: 0.6 },
-    });
-
     return;
   }
 
