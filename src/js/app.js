@@ -14,6 +14,8 @@
 
 import { generate } from "random-words";
 
+const terminalScreen = document.getElementById("output");
+
 const SPECIAL_CHARACTERS = [
   "!",
   "@",
@@ -167,10 +169,36 @@ const generateHackablePuzzle = () => {
     }
   }
 
-  console.log(output);
+  return output;
+};
+
+const displayPuzzle = (puzzle) => {
+  const fragment = document.createDocumentFragment();
+
+  for (let i = 0; i < puzzle.length; i += TOTAL_CHARACTERS_PER_ROW) {
+    // Extract a row of characters
+    const chunk = puzzle.slice(i, i + TOTAL_CHARACTERS_PER_ROW);
+
+    const row = document.createElement("div");
+
+    // Create a span for each character in each row
+    for (let j = 0; j < chunk.length; j++) {
+      const span = document.createElement("span");
+
+      span.innerHTML = chunk[j];
+
+      row.appendChild(span);
+    }
+
+    fragment.appendChild(row);
+  }
+
+  terminalScreen.appendChild(fragment);
 };
 
 // Initialize the terminal on DOMContentLoaded
 document.addEventListener("DOMContentLoaded", () => {
-  generateHackablePuzzle();
+  const puzzle = generateHackablePuzzle();
+
+  displayPuzzle(puzzle);
 });
