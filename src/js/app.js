@@ -169,15 +169,20 @@ const generateHackablePuzzle = () => {
     }
   }
 
-  return output;
+  return { output, passwordPositions, passwords };
 };
 
 const displayPuzzle = (puzzle) => {
+  // Get extra information from during the puzzle generation
+  const { output, passwordPositions, passwords } = puzzle;
+
   const fragment = document.createDocumentFragment();
 
-  for (let i = 0; i < puzzle.length; i += TOTAL_CHARACTERS_PER_ROW) {
+  let previousSeenPassword;
+
+  for (let i = 0; i < output.length; i += TOTAL_CHARACTERS_PER_ROW) {
     // Extract a row of characters
-    const chunk = puzzle.slice(i, i + TOTAL_CHARACTERS_PER_ROW);
+    const chunk = output.slice(i, i + TOTAL_CHARACTERS_PER_ROW);
 
     const row = document.createElement("div");
 
@@ -186,6 +191,17 @@ const displayPuzzle = (puzzle) => {
       const span = document.createElement("span");
 
       span.innerHTML = chunk[j];
+
+      // If the current character isn't a special character, that means it is part of a word
+      if (!SPECIAL_CHARACTERS.includes(chunk[j])) {
+        // Password will only return the correct password for the first character/index of that word, so we store it for the rest of a wodr until password is redefined
+        const password = passwords[passwordPositions.indexOf(i + j)];
+
+        if (password) previousSeenPassword = password;
+
+        // Set attribute for grouping and event listeners
+        span.dataset.password = password || previousSeenPassword;
+      }
 
       row.appendChild(span);
     }
