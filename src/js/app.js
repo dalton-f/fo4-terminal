@@ -18,6 +18,7 @@
 
 // VARS + GLOBALS + IMPORTS
 
+import confetti from "canvas-confetti";
 import { generate } from "random-words";
 
 const terminalScreen = document.getElementById("terminal-screen");
@@ -318,6 +319,13 @@ const handlePasswordGuess = (e, puzzle) => {
     restartButton.id = "restartButton";
 
     terminalOutput.append(restartButton);
+
+    confetti({
+      angle: randomNumberGenerator(125, 55),
+      spread: randomNumberGenerator(70, 50),
+      particleCount: randomNumberGenerator(100, 50),
+      origin: { y: 0.6 },
+    });
 
     return;
   }
