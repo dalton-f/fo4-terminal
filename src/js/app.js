@@ -133,6 +133,7 @@ const multipleRandomNumberGenerator = (max, length, minDifference = 0) => {
  * @returns {string[]} An array of words
  */
 const generateRandomWords = (max, length) =>
+  // FIXME: known bug - this generation of random words does NOT prevent duplicate words, which can cause problems
   generate({ exactly: max, minLength: length, maxLength: length });
 
 /**
@@ -428,6 +429,10 @@ difficultySelector.addEventListener("change", () => {
     case "hard":
       passwordLength = 7;
       passwordFrequency = 15;
+      break;
+    case "extrahard":
+      passwordLength = 10;
+      passwordFrequency = 10;
       break;
   }
 

@@ -111,11 +111,14 @@ var multipleRandomNumberGenerator = function multipleRandomNumberGenerator(max, 
  * @returns {string[]} An array of words
  */
 var generateRandomWords = function generateRandomWords(max, length) {
-  return (0,random_words__WEBPACK_IMPORTED_MODULE_0__.generate)({
-    exactly: max,
-    minLength: length,
-    maxLength: length
-  });
+  return (
+    // FIXME: known bug - this generation of random words does NOT prevent duplicate words, which can cause problems
+    (0,random_words__WEBPACK_IMPORTED_MODULE_0__.generate)({
+      exactly: max,
+      minLength: length,
+      maxLength: length
+    })
+  );
 };
 
 /**
@@ -364,6 +367,10 @@ difficultySelector.addEventListener("change", function () {
     case "hard":
       passwordLength = 7;
       passwordFrequency = 15;
+      break;
+    case "extrahard":
+      passwordLength = 10;
+      passwordFrequency = 10;
       break;
   }
   resetGame();
