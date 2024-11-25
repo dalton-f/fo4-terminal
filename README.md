@@ -11,7 +11,7 @@ Built with:
 - HTML5
 - Laravel Mix
 
-To play the minigame, visit [url here].
+To play the minigame, visit (https://dalton-f.github.io/fo4-terminal/).
 
 ## Contributing
 
