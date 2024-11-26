@@ -9,14 +9,7 @@
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var canvas_confetti__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! canvas-confetti */ "./node_modules/canvas-confetti/dist/confetti.module.mjs");
-/* harmony import */ var random_words__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! random-words */ "./node_modules/random-words/index.js");
-function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
-function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
-function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
-function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+/* harmony import */ var _components_utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components/utils */ "./src/js/components/utils.js");
 // INFO + CONTEXT
 
 // Terminals in the Fallout francise include a gameplay mechanic/minigame "Hacking" to unlock the terminals. The game has similariies to the board game "Mastermind",
@@ -29,14 +22,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
 // Finding complete sets of brackets within the garble on one row either removes incorrect/dud words or resets your attempts
 // Successfully hacking a terminal may allow one to: access information, disable or enable turrets or spotlights, alarm systems, and various other defenses or traps, open locked doors or safes.
 
-// TODO:
-// - typing animation
-// - updated visuals?
-// - login terminal
-// - better success screen
-
-// VARS + GLOBALS + IMPORTS
-
+// VARS + IMPORTS
 
 
 var terminalScreen = document.getElementById("terminal-screen");
@@ -50,78 +36,6 @@ var TOTAL_CHARACTERS_PER_ROW = 12;
 var TOTAL_ROWS = 32;
 var passwordLength = 5;
 var passwordFrequency = 20;
-
-// UTIL FUNCTIONS
-
-/**
- * Generates a random number from min (inclusive) to max (inclusive)
- *
- * @param {number} max - The maximum number to generate
- * @param {number} min - The minimum number to generate
- * @returns {number} A random number from 0 to max
- * @throws {Error} If the max is not a positive numerical value.
- */
-var randomNumberGenerator = function randomNumberGenerator(max) {
-  var min = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-  if (!Number.isFinite(max) || max <= 0) {
-    throw new Error("Maximum value must be a non-negative non-zero numerical value");
-  }
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-};
-
-/**
- * Generates an array of random numbers from 0 to max
- *
- * @param {number} max - The maximum number to generate
- * @param {number} length - The maximum numbers to generate
- * @param {number} [minDifference = 0] - The minimum difference between each number.
- * @returns {number[]} A random array of numbers matching length
- */
-var multipleRandomNumberGenerator = function multipleRandomNumberGenerator(max, length) {
-  var minDifference = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-  if (length < 0) throw new Error("Length must be a non-negative non-zero number");
-  if (max < length) throw new Error("Cannot get ".concat(length, " distinct values from ").concat(max, " options!"));
-
-  // Use a set to avoid duplicate values
-  var values = new Set();
-
-  // While the set is not fully populated
-  var _loop = function _loop() {
-    // Generate random values to add to it
-    var randomValue = randomNumberGenerator(max);
-
-    // Ensure the minDifference spacing is respected before adding values
-    if (_toConsumableArray(values).every(function (value) {
-      return Math.abs(value - randomValue) >= minDifference;
-    })) {
-      values.add(randomValue);
-    }
-  };
-  while (values.size < length) {
-    _loop();
-  }
-
-  // Return an array of spaced values
-  return _toConsumableArray(values);
-};
-
-/**
- * Generates an array of random words of a given length
- *
- * @param {number} max - The maximum number of words to generate
- * @param {number} length - The length of the words
- * @returns {string[]} An array of words
- */
-var generateRandomWords = function generateRandomWords(max, length) {
-  return (
-    // FIXME: known bug - this generation of random words does NOT prevent duplicate words, which can cause problems
-    (0,random_words__WEBPACK_IMPORTED_MODULE_1__.generate)({
-      exactly: max,
-      minLength: length,
-      maxLength: length
-    })
-  );
-};
 
 /**
  * Generates an array of random special characters.
@@ -137,37 +51,20 @@ var generateGarble = function generateGarble(length) {
   var garble = Array.from({
     length: length
   }, function () {
-    return SPECIAL_CHARACTERS[randomNumberGenerator(SPECIAL_CHARACTERS.length - 1)];
+    return SPECIAL_CHARACTERS[(0,_components_utils__WEBPACK_IMPORTED_MODULE_0__.randomNumberGenerator)(SPECIAL_CHARACTERS.length - 1)];
   });
   return garble;
 };
-
-/**
- * Generates a random hexadecimal number of a given size
- *
- * @param {number} size - The length of the hexadecimal value to generate
- * @returns {string} A random hexadecimal value
- */
-var getRandomHexadecimal = function getRandomHexadecimal(size) {
-  return Array.from({
-    length: size
-  }, function () {
-    return Math.floor(Math.random() * 16).toString(16).toUpperCase();
-  }).join("");
-};
-
-// MAIN FUNCTIONS
-
 var generateHackablePuzzle = function generateHackablePuzzle() {
   // Generate an array of length 384 filled wth special characters for the bulk/base of the puzzle output
   var output = generateGarble(TOTAL_ROWS * TOTAL_CHARACTERS_PER_ROW);
 
   // Generate an array of unqiue random index positions from 0 to 384 - password length (so no password gets cut off) for the positions of the passwords within the puzzle
-  var passwordPositions = multipleRandomNumberGenerator(TOTAL_ROWS * TOTAL_CHARACTERS_PER_ROW - passwordLength, passwordFrequency, passwordLength + 1);
+  var passwordPositions = (0,_components_utils__WEBPACK_IMPORTED_MODULE_0__.multipleRandomNumberGenerator)(TOTAL_ROWS * TOTAL_CHARACTERS_PER_ROW - passwordLength, passwordFrequency, passwordLength + 1);
 
   // Generate 20 random 5 letters words to act as either the password or dud
-  var passwords = generateRandomWords(passwordFrequency, passwordLength);
-  var correctPassword = passwords[randomNumberGenerator(passwords.length - 1)];
+  var passwords = (0,_components_utils__WEBPACK_IMPORTED_MODULE_0__.generateRandomWords)(passwordFrequency, passwordLength);
+  var correctPassword = passwords[(0,_components_utils__WEBPACK_IMPORTED_MODULE_0__.randomNumberGenerator)(passwords.length - 1)];
 
   // Use the passwords and their randomly generated positions to add them into the output
   for (var i = 0; i < passwordPositions.length; i++) {
@@ -199,7 +96,7 @@ var displayPuzzle = function displayPuzzle(puzzle) {
     var row = document.createElement("div");
 
     // Every row must start with a random hexadecimal number
-    var randomHexadecimal = getRandomHexadecimal(4);
+    var randomHexadecimal = (0,_components_utils__WEBPACK_IMPORTED_MODULE_0__.generateRandomHex)(4);
     var hexadecimalPrefix = document.createElement("span");
     hexadecimalPrefix.innerHTML = "0x".concat(randomHexadecimal, " ");
     row.appendChild(hexadecimalPrefix);
@@ -222,6 +119,14 @@ var displayPuzzle = function displayPuzzle(puzzle) {
       row.appendChild(span);
     }
     fragment.appendChild(row);
+
+    // Create typing effect as the puzzle is generated
+
+    (0,_components_utils__WEBPACK_IMPORTED_MODULE_0__.typer)(row, {
+      strings: [],
+      speed: (0,_components_utils__WEBPACK_IMPORTED_MODULE_0__.randomNumberGenerator)(50, 25),
+      cursor: false
+    });
   }
   terminalScreen.appendChild(fragment);
 };
@@ -273,14 +178,6 @@ var handlePasswordGuess = function handlePasswordGuess(e, puzzle) {
     restartButton.innerHTML = "Click to restart";
     restartButton.id = "restartButton";
     terminalOutput.append(restartButton);
-    (0,canvas_confetti__WEBPACK_IMPORTED_MODULE_0__["default"])({
-      angle: randomNumberGenerator(125, 55),
-      spread: randomNumberGenerator(70, 50),
-      particleCount: randomNumberGenerator(100, 50),
-      origin: {
-        y: 0.6
-      }
-    });
     return;
   }
 
@@ -385,6 +282,121 @@ difficultySelector.addEventListener("change", function () {
   }
   resetGame();
 });
+
+/***/ }),
+
+/***/ "./src/js/components/utils.js":
+/*!************************************!*\
+  !*** ./src/js/components/utils.js ***!
+  \************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   generateRandomHex: () => (/* binding */ generateRandomHex),
+/* harmony export */   generateRandomWords: () => (/* binding */ generateRandomWords),
+/* harmony export */   multipleRandomNumberGenerator: () => (/* binding */ multipleRandomNumberGenerator),
+/* harmony export */   randomNumberGenerator: () => (/* binding */ randomNumberGenerator),
+/* harmony export */   typer: () => (/* binding */ typer)
+/* harmony export */ });
+/* harmony import */ var random_words__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! random-words */ "./node_modules/random-words/index.js");
+/* harmony import */ var typeit__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! typeit */ "./node_modules/typeit/dist/index.es.js");
+function _toConsumableArray(r) { return _arrayWithoutHoles(r) || _iterableToArray(r) || _unsupportedIterableToArray(r) || _nonIterableSpread(); }
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
+function _iterableToArray(r) { if ("undefined" != typeof Symbol && null != r[Symbol.iterator] || null != r["@@iterator"]) return Array.from(r); }
+function _arrayWithoutHoles(r) { if (Array.isArray(r)) return _arrayLikeToArray(r); }
+function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
+
+
+
+/**
+ * Generates a random number from min (inclusive) to max (inclusive)
+ *
+ * @param {number} max - The maximum number to generate
+ * @param {number} min - The minimum number to generate
+ * @returns {number} A random number from 0 to max
+ * @throws {Error} If the max is not a positive numerical value.
+ */
+var randomNumberGenerator = function randomNumberGenerator(max) {
+  var min = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+  if (!Number.isFinite(max) || max <= 0) {
+    throw new Error("Maximum value must be a non-negative non-zero numerical value");
+  }
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};
+
+/**
+ * Generates an array of random numbers from 0 to max
+ *
+ * @param {number} max - The maximum number to generate
+ * @param {number} length - The maximum numbers to generate
+ * @param {number} [minDifference = 0] - The minimum difference between each number.
+ * @returns {number[]} A random array of numbers matching length
+ */
+var multipleRandomNumberGenerator = function multipleRandomNumberGenerator(max, length) {
+  var minDifference = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+  if (length < 0) throw new Error("Length must be a non-negative non-zero number");
+  if (max < length) throw new Error("Cannot get ".concat(length, " distinct values from ").concat(max, " options!"));
+
+  // Use a set to avoid duplicate values
+  var values = new Set();
+
+  // While the set is not fully populated
+  var _loop = function _loop() {
+    // Generate random values to add to it
+    var randomValue = randomNumberGenerator(max);
+
+    // Ensure the minDifference spacing is respected before adding values
+    if (_toConsumableArray(values).every(function (value) {
+      return Math.abs(value - randomValue) >= minDifference;
+    })) {
+      values.add(randomValue);
+    }
+  };
+  while (values.size < length) {
+    _loop();
+  }
+
+  // Return an array of spaced values
+  return _toConsumableArray(values);
+};
+
+/**
+ * Generates an array of random words of a given length
+ *
+ * @param {number} max - The maximum number of words to generate
+ * @param {number} length - The length of the words
+ * @returns {string[]} An array of words
+ */
+var generateRandomWords = function generateRandomWords(max, length) {
+  return (
+    // FIXME: known bug - this generation of random words does NOT prevent duplicate words, which can cause problems
+    (0,random_words__WEBPACK_IMPORTED_MODULE_0__.generate)({
+      exactly: max,
+      minLength: length,
+      maxLength: length
+    })
+  );
+};
+
+/**
+ * Generates a random hexadecimal number of a given size
+ *
+ * @param {number} size - The length of the hexadecimal value to generate
+ * @returns {string} A random hexadecimal value
+ */
+var generateRandomHex = function generateRandomHex(size) {
+  return Array.from({
+    length: size
+  }, function () {
+    return Math.floor(Math.random() * 16).toString(16).toUpperCase();
+  }).join("");
+};
+var typer = function typer(container, options) {
+  new typeit__WEBPACK_IMPORTED_MODULE_1__["default"](container, options).go();
+};
 
 /***/ }),
 
@@ -1431,6 +1443,1016 @@ if ( true && module.exports) {
 
 /***/ }),
 
+/***/ "./node_modules/typeit/dist/index.es.js":
+/*!**********************************************!*\
+  !*** ./node_modules/typeit/dist/index.es.js ***!
+  \**********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ TypeIt)
+/* harmony export */ });
+// TypeIt by Alex MacArthur - https://typeitjs.com
+const isArray = (thing) => Array.isArray(thing);
+
+const asArray = (value) => isArray(value) ? value : [value];
+
+let Queue = function(initialItems) {
+  let add = function(steps) {
+    asArray(steps).forEach((step) => {
+      return _q.set(Symbol(step.char?.innerText), buildQueueItem({ ...step }));
+    });
+    return this;
+  };
+  let getTypeable = () => rawValues().filter((value) => value.typeable);
+  let set = function(index, item) {
+    let keys = [..._q.keys()];
+    _q.set(keys[index], buildQueueItem(item));
+  };
+  let buildQueueItem = (queueItem) => {
+    queueItem.shouldPauseCursor = function() {
+      return Boolean(this.typeable || this.cursorable || this.deletable);
+    };
+    return queueItem;
+  };
+  let reset = function() {
+    _q.forEach((item) => delete item.done);
+  };
+  let wipe = function() {
+    _q = /* @__PURE__ */ new Map();
+    add(initialItems);
+  };
+  let getQueue = () => _q;
+  let rawValues = () => Array.from(_q.values());
+  let destroy = (key) => _q.delete(key);
+  let getPendingQueueItems = () => {
+    const pending = [];
+    for (let [, value] of getQueue()) {
+      if (!value.done) {
+        pending.push(value);
+      }
+    }
+    return pending;
+  };
+  let getItems = (all = false) => all ? rawValues() : rawValues().filter((i) => !i.done);
+  let done = (key, shouldDestroy = false) => shouldDestroy ? _q.delete(key) : _q.get(key).done = true;
+  let _q = /* @__PURE__ */ new Map();
+  add(initialItems);
+  return {
+    add,
+    set,
+    wipe,
+    done,
+    reset,
+    destroy,
+    getItems,
+    getQueue,
+    getTypeable,
+    getPendingQueueItems
+  };
+};
+
+const DATA_ATTRIBUTE = "data-typeit-id";
+const CURSOR_CLASS = "ti-cursor";
+const END = "END";
+const DEFAULT_STATUSES = {
+  started: false,
+  completed: false,
+  frozen: false,
+  destroyed: false
+};
+const DEFAULT_OPTIONS = {
+  breakLines: true,
+  cursor: {
+    autoPause: true,
+    autoPauseDelay: 500,
+    animation: {
+      frames: [0, 0, 1].map((n) => {
+        return { opacity: n };
+      }),
+      options: {
+        iterations: Infinity,
+        easing: "steps(2, start)",
+        fill: "forwards"
+      }
+    }
+  },
+  cursorChar: "|",
+  cursorSpeed: 1e3,
+  deleteSpeed: null,
+  html: true,
+  lifeLike: true,
+  loop: false,
+  loopDelay: 750,
+  nextStringDelay: 750,
+  speed: 100,
+  startDelay: 250,
+  startDelete: false,
+  strings: [],
+  waitUntilVisible: false,
+  beforeString: () => {
+  },
+  afterString: () => {
+  },
+  beforeStep: () => {
+  },
+  afterStep: () => {
+  },
+  afterComplete: () => {
+  }
+};
+const PLACEHOLDER_CSS = `[${DATA_ATTRIBUTE}]:before {content: '.'; display: inline-block; width: 0; visibility: hidden;}`;
+
+const createElement = (el) => document.createElement(el);
+
+const createTextNode = (content) => document.createTextNode(content);
+
+const appendStyleBlock = (styles, id = "") => {
+  let styleBlock = createElement("style");
+  styleBlock.id = id;
+  styleBlock.appendChild(createTextNode(styles));
+  document.head.appendChild(styleBlock);
+};
+
+const calculateDelay = (delayArg) => {
+  if (!isArray(delayArg)) {
+    delayArg = [delayArg / 2, delayArg / 2];
+  }
+  return delayArg;
+};
+
+const randomInRange = (value, range) => {
+  return Math.abs(
+    Math.random() * (value + range - (value - range)) + (value - range)
+  );
+};
+
+let range = (val) => val / 2;
+function calculatePace(options) {
+  let { speed, deleteSpeed, lifeLike } = options;
+  deleteSpeed = deleteSpeed !== null ? deleteSpeed : speed / 3;
+  return lifeLike ? [
+    randomInRange(speed, range(speed)),
+    randomInRange(deleteSpeed, range(deleteSpeed))
+  ] : [speed, deleteSpeed];
+}
+
+const toArray = (val) => Array.from(val);
+
+let expandTextNodes = (element) => {
+  [...element.childNodes].forEach((child) => {
+    if (child.nodeValue) {
+      [...child.nodeValue].forEach((c) => {
+        child.parentNode.insertBefore(createTextNode(c), child);
+      });
+      child.remove();
+      return;
+    }
+    expandTextNodes(child);
+  });
+  return element;
+};
+
+const getParsedBody = (content) => {
+  let doc = document.implementation.createHTMLDocument();
+  doc.body.innerHTML = content;
+  return expandTextNodes(doc.body);
+};
+
+function walkElementNodes(element, shouldReverse = false, shouldIncludeCursor = false) {
+  let cursor = element.querySelector(`.${CURSOR_CLASS}`);
+  let walker = document.createTreeWalker(element, NodeFilter.SHOW_ALL, {
+    acceptNode: (node) => {
+      if (cursor && shouldIncludeCursor) {
+        if (node.classList?.contains(CURSOR_CLASS)) {
+          return NodeFilter.FILTER_ACCEPT;
+        }
+        if (cursor.contains(node)) {
+          return NodeFilter.FILTER_REJECT;
+        }
+      }
+      return node.classList?.contains(CURSOR_CLASS) ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT;
+    }
+  });
+  let nextNode;
+  let nodes = [];
+  while (nextNode = walker.nextNode()) {
+    if (!nextNode.originalParent) {
+      nextNode.originalParent = nextNode.parentNode;
+    }
+    nodes.push(nextNode);
+  }
+  return shouldReverse ? nodes.reverse() : nodes;
+}
+function chunkStringAsHtml(string) {
+  return walkElementNodes(getParsedBody(string));
+}
+function maybeChunkStringAsHtml(str, asHtml = true) {
+  return asHtml ? chunkStringAsHtml(str) : toArray(str).map(createTextNode);
+}
+
+const cleanUpSkipped = ({
+  index,
+  newIndex,
+  queueItems,
+  cleanUp
+}) => {
+  for (let i = index + 1; i < newIndex + 1; i++) {
+    cleanUp(queueItems[i][0]);
+  }
+};
+
+const isNumber = (value) => Number.isInteger(value);
+
+const countStepsToSelector = ({
+  queueItems,
+  selector,
+  cursorPosition,
+  to
+}) => {
+  if (isNumber(selector)) {
+    return selector * -1;
+  }
+  let isMovingToEnd = new RegExp(END, "i").test(to);
+  let selectorIndex = selector ? [...queueItems].reverse().findIndex(({ char }) => {
+    let parentElement = char.parentElement;
+    let parentMatches = parentElement.matches(selector);
+    if (isMovingToEnd && parentMatches) {
+      return true;
+    }
+    return parentMatches && parentElement.firstChild.isSameNode(char);
+  }) : -1;
+  if (selectorIndex < 0) {
+    selectorIndex = isMovingToEnd ? 0 : queueItems.length - 1;
+  }
+  let offset = isMovingToEnd ? 0 : 1;
+  return selectorIndex - cursorPosition + offset;
+};
+
+const destroyTimeouts = (timeouts) => {
+  timeouts.forEach(clearTimeout);
+  return [];
+};
+
+const duplicate = (value, times) => new Array(times).fill(value);
+
+let beforePaint = (cb) => {
+  return new Promise((resolve) => {
+    requestAnimationFrame(async () => {
+      resolve(await cb());
+    });
+  });
+};
+
+let getAnimationFromElement = (element) => {
+  return element?.getAnimations().find((animation) => {
+    return animation.id === element.dataset.tiAnimationId;
+  });
+};
+
+let setCursorAnimation = ({
+  cursor,
+  frames,
+  options
+}) => {
+  let animation = cursor.animate(frames, options);
+  animation.pause();
+  animation.id = cursor.dataset.tiAnimationId;
+  beforePaint(() => {
+    beforePaint(() => {
+      animation.play();
+    });
+  });
+  return animation;
+};
+
+let rebuildCursorAnimation = ({
+  cursor,
+  options,
+  cursorOptions
+}) => {
+  if (!cursor || !cursorOptions) return;
+  let animation = getAnimationFromElement(cursor);
+  let oldCurrentTime;
+  if (animation) {
+    options.delay = animation.effect.getComputedTiming().delay;
+    oldCurrentTime = animation.currentTime;
+    animation.cancel();
+  }
+  let newAnimation = setCursorAnimation({
+    cursor,
+    frames: cursorOptions.animation.frames,
+    options
+  });
+  if (oldCurrentTime) {
+    newAnimation.currentTime = oldCurrentTime;
+  }
+  return newAnimation;
+};
+
+let execute = (queueItem) => queueItem.func?.call(null);
+let fireItem = async ({
+  index,
+  queueItems,
+  wait,
+  cursor,
+  cursorOptions
+}) => {
+  let queueItem = queueItems[index][1];
+  let instantQueue = [];
+  let tempIndex = index;
+  let futureItem = queueItem;
+  let shouldBeGrouped = () => futureItem && !futureItem.delay;
+  let shouldPauseCursor = queueItem.shouldPauseCursor() && cursorOptions.autoPause;
+  while (shouldBeGrouped()) {
+    instantQueue.push(futureItem);
+    shouldBeGrouped() && tempIndex++;
+    futureItem = queueItems[tempIndex] ? queueItems[tempIndex][1] : null;
+  }
+  if (instantQueue.length) {
+    await beforePaint(async () => {
+      for (let q of instantQueue) {
+        await execute(q);
+      }
+    });
+    return tempIndex - 1;
+  }
+  let animation = getAnimationFromElement(cursor);
+  let options;
+  if (animation) {
+    options = {
+      ...animation.effect.getComputedTiming(),
+      delay: shouldPauseCursor ? cursorOptions.autoPauseDelay : 0
+    };
+  }
+  await wait(async () => {
+    if (animation && shouldPauseCursor) {
+      animation.cancel();
+    }
+    await beforePaint(() => {
+      execute(queueItem);
+    });
+  }, queueItem.delay);
+  await rebuildCursorAnimation({
+    cursor,
+    options,
+    cursorOptions
+  });
+  return index;
+};
+
+const fireWhenVisible = (element, func) => {
+  let observer = new IntersectionObserver(
+    (entries, observer2) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          func();
+          observer2.unobserve(element);
+        }
+      });
+    },
+    { threshold: 1 }
+  );
+  observer.observe(element);
+};
+
+const generateHash = () => Math.random().toString().substring(2, 9);
+
+const isInput = (el) => {
+  return "value" in el;
+};
+
+let getAllChars = (element) => {
+  if (isInput(element)) {
+    return toArray(element.value);
+  }
+  return walkElementNodes(element, true).filter(
+    (c) => !(c.childNodes.length > 0)
+  );
+};
+
+let handleFunctionalArg = (arg) => {
+  return typeof arg === "function" ? arg() : arg;
+};
+
+let select = (selector, element = document, all = false) => {
+  return element[`querySelector${all ? "All" : ""}`](selector);
+};
+
+let isBodyElement = (node) => /body/i.test(node?.tagName);
+
+let insertIntoElement = (originalTarget, character) => {
+  if (isInput(originalTarget)) {
+    originalTarget.value = `${originalTarget.value}${character.textContent}`;
+    return;
+  }
+  character.innerHTML = "";
+  let target = isBodyElement(character.originalParent) ? originalTarget : (
+    // If we add one-off fresh elements, there will be no
+    // "originalParent", so always fall back to the default target.
+    character.originalParent || originalTarget
+  );
+  let cursorNode = select("." + CURSOR_CLASS, target) || null;
+  if (cursorNode && cursorNode.parentElement !== target) {
+    target = cursorNode.parentElement;
+  }
+  target.insertBefore(character, cursorNode);
+};
+
+const isNonVoidElement = (el) => /<(.+)>(.*?)<\/(.+)>/.test(el.outerHTML);
+
+const merge = (originalObj, newObj) => Object.assign({}, originalObj, newObj);
+
+let processCursorOptions = (cursorOptions) => {
+  if (typeof cursorOptions === "object") {
+    let newOptions = {};
+    let { frames: defaultFrames, options: defaultOptions } = DEFAULT_OPTIONS.cursor.animation;
+    newOptions.animation = cursorOptions.animation || {};
+    newOptions.animation.frames = cursorOptions.animation?.frames || defaultFrames;
+    newOptions.animation.options = merge(
+      defaultOptions,
+      cursorOptions.animation?.options || {}
+    );
+    newOptions.autoPause = cursorOptions.autoPause ?? DEFAULT_OPTIONS.cursor.autoPause;
+    newOptions.autoPauseDelay = cursorOptions.autoPauseDelay || DEFAULT_OPTIONS.cursor.autoPauseDelay;
+    return newOptions;
+  }
+  if (cursorOptions === true) {
+    return DEFAULT_OPTIONS.cursor;
+  }
+  return cursorOptions;
+};
+
+const removeNode = (node, rootElement) => {
+  if (!node) return;
+  let nodeParent = node.parentNode;
+  let nodeToRemove = nodeParent.childNodes.length > 1 || nodeParent.isSameNode(rootElement) ? (
+    // This parent still needs to exist.
+    node
+  ) : (
+    // There's nothing else in there, so just delete the entire thing.
+    // By doing this, we clean up markup as we go along.
+    nodeParent
+  );
+  nodeToRemove.remove();
+};
+
+const repositionCursor = (element, allChars, newCursorPosition) => {
+  let nodeToInsertBefore = allChars[newCursorPosition - 1];
+  let cursor = select(`.${CURSOR_CLASS}`, element);
+  element = nodeToInsertBefore?.parentNode || element;
+  element.insertBefore(cursor, nodeToInsertBefore || null);
+};
+
+function selectorToElement(thing) {
+  return typeof thing === "string" ? select(thing) : thing;
+}
+
+let cursorFontStyles = {
+  "font-family": "",
+  "font-weight": "",
+  "font-size": "",
+  "font-style": "",
+  "line-height": "",
+  color: "",
+  transform: "translateX(-.125em)"
+};
+let setCursorStyles = (id, element) => {
+  let rootSelector = `[${DATA_ATTRIBUTE}='${id}']`;
+  let cursorSelector = `${rootSelector} .${CURSOR_CLASS}`;
+  let computedStyles = getComputedStyle(element);
+  let customProperties = Object.entries(cursorFontStyles).reduce(
+    (accumulator, [item, value]) => {
+      return `${accumulator} ${item}: var(--ti-cursor-${item}, ${value || computedStyles[item]});`;
+    },
+    ""
+  );
+  appendStyleBlock(
+    `${cursorSelector} { display: inline-block; width: 0; ${customProperties} }`,
+    id
+  );
+};
+
+function splitOnBreak(str) {
+  return str.replace(/<!--(.+?)-->/g, "").trim().split(/<br(?:\s*?)(?:\/)?>/);
+}
+
+let updateCursorPosition = (steps, cursorPosition, printedCharacters) => {
+  return Math.min(
+    Math.max(cursorPosition + steps, 0),
+    printedCharacters.length
+  );
+};
+
+let wait = (callback, delay, timeouts) => {
+  return new Promise((resolve) => {
+    let cb = async () => {
+      await callback();
+      resolve();
+    };
+    timeouts.push(setTimeout(cb, delay || 0));
+  });
+};
+
+class TypeIt {
+  element;
+  timeouts;
+  cursorPosition;
+  predictedCursorPosition;
+  statuses = {
+    started: false,
+    completed: false,
+    frozen: false,
+    destroyed: false,
+    firing: false
+  };
+  opts;
+  id;
+  queue;
+  cursor;
+  flushCallback = null;
+  unfreeze = () => {
+  };
+  constructor(element, options = {}) {
+    this.opts = merge(DEFAULT_OPTIONS, options);
+    this.element = selectorToElement(element);
+    this.timeouts = [];
+    this.cursorPosition = 0;
+    this.unfreeze = () => {
+    };
+    this.predictedCursorPosition = null;
+    this.statuses = merge({}, DEFAULT_STATUSES);
+    this.id = generateHash();
+    this.queue = Queue([{ delay: this.opts.startDelay }]);
+    this.#buildOptions(options);
+    this.cursor = this.#setUpCursor();
+    this.element.dataset.typeitId = this.id;
+    appendStyleBlock(PLACEHOLDER_CSS);
+    if (this.opts.strings.length) {
+      this.#generateQueue();
+    }
+  }
+  /**
+   * Can only be called once.
+   */
+  go() {
+    if (this.statuses.started) {
+      return this;
+    }
+    this.#attachCursor();
+    if (!this.opts.waitUntilVisible) {
+      this.#fire();
+      return this;
+    }
+    fireWhenVisible(this.element, this.#fire.bind(this));
+    return this;
+  }
+  destroy(shouldRemoveCursor = true) {
+    this.timeouts = destroyTimeouts(this.timeouts);
+    handleFunctionalArg(shouldRemoveCursor) && this.cursor && this.#removeNode(this.cursor);
+    this.statuses.destroyed = true;
+  }
+  reset(rebuild) {
+    !this.is("destroyed") && this.destroy();
+    if (rebuild) {
+      this.queue.wipe();
+      rebuild(this);
+    } else {
+      this.queue.reset();
+    }
+    this.cursorPosition = 0;
+    for (let property in this.statuses) {
+      this.statuses[property] = false;
+    }
+    this.element[this.#elementIsInput() ? "value" : "innerHTML"] = "";
+    return this;
+  }
+  is = function(key) {
+    return this.statuses[key];
+  };
+  type(string, actionOpts = {}) {
+    string = handleFunctionalArg(string);
+    let { instant } = actionOpts;
+    let bookEndQueueItems = this.#generateTemporaryOptionQueueItems(actionOpts);
+    let chars = maybeChunkStringAsHtml(string, this.opts.html);
+    let charsAsQueueItems = chars.map((char) => {
+      return {
+        func: () => this.#type(char),
+        char,
+        delay: instant || isNonVoidElement(char) ? 0 : this.#getPace(),
+        typeable: char.nodeType === Node.TEXT_NODE
+      };
+    });
+    let itemsToQueue = [
+      bookEndQueueItems[0],
+      { func: async () => await this.opts.beforeString(string, this) },
+      ...charsAsQueueItems,
+      { func: async () => await this.opts.afterString(string, this) },
+      bookEndQueueItems[1]
+    ];
+    return this.#queueAndReturn(itemsToQueue, actionOpts);
+  }
+  break(actionOpts = {}) {
+    return this.#queueAndReturn(
+      {
+        func: () => this.#type(createElement("BR")),
+        typeable: true
+      },
+      actionOpts
+    );
+  }
+  move(movementArg, actionOpts = {}) {
+    movementArg = handleFunctionalArg(movementArg);
+    let bookEndQueueItems = this.#generateTemporaryOptionQueueItems(actionOpts);
+    let { instant, to } = actionOpts;
+    let numberOfSteps = countStepsToSelector({
+      queueItems: this.queue.getTypeable(),
+      selector: movementArg === null ? "" : movementArg,
+      to,
+      cursorPosition: this.#derivedCursorPosition
+    });
+    let directionalStep = numberOfSteps < 0 ? -1 : 1;
+    this.predictedCursorPosition = this.#derivedCursorPosition + numberOfSteps;
+    return this.#queueAndReturn(
+      [
+        bookEndQueueItems[0],
+        ...duplicate(
+          {
+            func: () => this.#move(directionalStep),
+            delay: instant ? 0 : this.#getPace(),
+            cursorable: true
+          },
+          Math.abs(numberOfSteps)
+        ),
+        bookEndQueueItems[1]
+      ],
+      actionOpts
+    );
+  }
+  exec(func, actionOpts = {}) {
+    let bookEndQueueItems = this.#generateTemporaryOptionQueueItems(actionOpts);
+    return this.#queueAndReturn(
+      [bookEndQueueItems[0], { func: () => func(this) }, bookEndQueueItems[1]],
+      actionOpts
+    );
+  }
+  options(opts, actionOpts = {}) {
+    opts = handleFunctionalArg(opts);
+    this.#updateOptions(opts);
+    return this.#queueAndReturn({}, actionOpts);
+  }
+  pause(milliseconds, actionOpts = {}) {
+    return this.#queueAndReturn(
+      { delay: handleFunctionalArg(milliseconds) },
+      actionOpts
+    );
+  }
+  delete(numCharacters = null, actionOpts = {}) {
+    numCharacters = handleFunctionalArg(numCharacters);
+    let bookEndQueueItems = this.#generateTemporaryOptionQueueItems(actionOpts);
+    let num = numCharacters;
+    let { instant, to } = actionOpts;
+    let typeableQueueItems = this.queue.getTypeable();
+    let rounds = (() => {
+      if (num === null) {
+        return typeableQueueItems.length;
+      }
+      if (isNumber(num)) {
+        return num;
+      }
+      return countStepsToSelector({
+        queueItems: typeableQueueItems,
+        selector: num,
+        cursorPosition: this.#derivedCursorPosition,
+        to
+      });
+    })();
+    return this.#queueAndReturn(
+      [
+        bookEndQueueItems[0],
+        ...duplicate(
+          {
+            func: this.#delete.bind(this),
+            delay: instant ? 0 : this.#getPace(1),
+            deletable: true
+          },
+          rounds
+        ),
+        bookEndQueueItems[1]
+      ],
+      actionOpts
+    );
+  }
+  freeze() {
+    this.statuses.frozen = true;
+  }
+  /**
+   * Like `.go()`, but more... "off the grid."
+   *
+   * - won't trigger `afterComplete` callback
+   * - items won't be replayed after `.reset()`
+   *
+   * When called, all non-done items will be "flushed" --
+   * that is, executed, but not remembered.
+   */
+  flush(cb = null) {
+    this.flushCallback = cb || this.flushCallback;
+    if (this.statuses.firing) {
+      return this;
+    }
+    this.#attachCursor();
+    this.#fire(false).then(() => {
+      if (this.queue.getPendingQueueItems().length > 0) {
+        return this.flush();
+      }
+      this.flushCallback();
+      this.flushCallback = null;
+    });
+    return this;
+  }
+  getQueue() {
+    return this.queue;
+  }
+  getOptions() {
+    return this.opts;
+  }
+  updateOptions(options) {
+    return this.#updateOptions(options);
+  }
+  getElement() {
+    return this.element;
+  }
+  empty(actionOpts = {}) {
+    return this.#queueAndReturn({ func: this.#empty.bind(this) }, actionOpts);
+  }
+  async #empty() {
+    if (this.#elementIsInput()) {
+      this.element.value = "";
+      return;
+    }
+    this.#allChars.forEach(this.#removeNode.bind(this));
+    return;
+  }
+  /**
+   * Execute items in the queue.
+   *
+   * @param remember If false, each queue item will be destroyed once executed.
+   * @returns
+   */
+  async #fire(remember = true) {
+    this.statuses.started = true;
+    this.statuses.firing = true;
+    let cleanUp = (qKey) => {
+      this.queue.done(qKey, !remember);
+    };
+    try {
+      let queueItems = [...this.queue.getQueue()];
+      for (let index = 0; index < queueItems.length; index++) {
+        let [queueKey, queueItem] = queueItems[index];
+        if (queueItem.done) continue;
+        if (!queueItem.deletable || queueItem.deletable && this.#allChars.length) {
+          let newIndex = await this.#fireItemWithContext(index, queueItems);
+          cleanUpSkipped({
+            index,
+            newIndex,
+            queueItems,
+            cleanUp
+          });
+          index = newIndex;
+        }
+        cleanUp(queueKey);
+      }
+      if (!remember) {
+        this.statuses.firing = false;
+        return this;
+      }
+      this.statuses.completed = true;
+      this.statuses.firing = false;
+      await this.opts.afterComplete(this);
+      if (!this.opts.loop) {
+        throw "";
+      }
+      let delay = this.opts.loopDelay;
+      this.#wait(async () => {
+        await this.#prepLoop(delay[0]);
+        this.#fire();
+      }, delay[1]);
+    } catch (e) {
+    }
+    this.statuses.firing = false;
+    return this;
+  }
+  async #move(step) {
+    this.cursorPosition = updateCursorPosition(
+      step,
+      this.cursorPosition,
+      this.#allChars
+    );
+    repositionCursor(this.element, this.#allChars, this.cursorPosition);
+  }
+  /**
+   * 1. Reset queue.
+   * 2. Reset initial pause.
+   */
+  async #prepLoop(delay) {
+    let derivedCursorPosition = this.#derivedCursorPosition;
+    derivedCursorPosition && await this.#move({ value: derivedCursorPosition });
+    let queueItems = this.#allChars.map((c) => {
+      return [
+        Symbol(),
+        {
+          func: this.#delete.bind(this),
+          delay: this.#getPace(1),
+          deletable: true,
+          shouldPauseCursor: () => true
+        }
+      ];
+    });
+    for (let index = 0; index < queueItems.length; index++) {
+      await this.#fireItemWithContext(index, queueItems);
+    }
+    this.queue.reset();
+    this.queue.set(0, { delay });
+  }
+  #fireItemWithContext(index, queueItems) {
+    return fireItem({
+      index,
+      queueItems,
+      wait: this.#wait.bind(this),
+      cursor: this.cursor,
+      cursorOptions: this.opts.cursor
+    });
+  }
+  async #wait(callback, delay, silent = false) {
+    if (this.statuses.frozen) {
+      await new Promise((resolve) => {
+        this.unfreeze = () => {
+          this.statuses.frozen = false;
+          resolve();
+        };
+      });
+    }
+    silent || await this.opts.beforeStep(this);
+    await wait(callback, delay, this.timeouts);
+    silent || await this.opts.afterStep(this);
+  }
+  /**
+   * Attach it to the DOM so, along with the required CSS transition.
+   */
+  async #attachCursor() {
+    !this.#elementIsInput() && this.cursor && this.element.appendChild(this.cursor);
+    if (this.#shouldRenderCursor) {
+      setCursorStyles(this.id, this.element);
+      this.cursor.dataset.tiAnimationId = this.id;
+      let { animation } = this.opts.cursor;
+      let { frames, options } = animation;
+      setCursorAnimation({
+        frames,
+        cursor: this.cursor,
+        options: {
+          duration: this.opts.cursorSpeed,
+          ...options
+        }
+      });
+    }
+  }
+  #elementIsInput() {
+    return isInput(this.element);
+  }
+  #queueAndReturn(steps, opts) {
+    this.queue.add(steps);
+    this.#maybeAppendPause(opts);
+    return this;
+  }
+  #maybeAppendPause(opts = {}) {
+    let delay = opts.delay;
+    delay && this.queue.add({ delay });
+  }
+  #generateTemporaryOptionQueueItems(newOptions = {}) {
+    return [
+      { func: () => this.#updateOptions(newOptions) },
+      { func: () => this.#updateOptions(this.opts) }
+    ];
+  }
+  async #updateOptions(opts) {
+    this.opts = merge(this.opts, opts);
+  }
+  /**
+   * Based on provided strings, generate a TypeIt queue
+   * to be fired for each character in the string.
+   */
+  #generateQueue() {
+    let strings = this.opts.strings.filter((string) => !!string);
+    strings.forEach((string, index) => {
+      this.type(string);
+      if (index + 1 === strings.length) {
+        return;
+      }
+      let splitItems = this.opts.breakLines ? [{ func: () => this.#type(createElement("BR")), typeable: true }] : duplicate(
+        {
+          func: this.#delete.bind(this),
+          delay: this.#getPace(1)
+        },
+        this.queue.getTypeable().length
+      );
+      this.#addSplitPause(splitItems);
+    });
+  }
+  #buildOptions = (options) => {
+    this.opts.cursor = processCursorOptions(
+      options.cursor ?? DEFAULT_OPTIONS.cursor
+    );
+    this.opts.strings = this.#prependHardcodedStrings(
+      asArray(this.opts.strings)
+    );
+    this.opts = merge(this.opts, {
+      html: !this.#isInput && this.opts.html,
+      nextStringDelay: calculateDelay(this.opts.nextStringDelay),
+      loopDelay: calculateDelay(this.opts.loopDelay)
+    });
+  };
+  #prependHardcodedStrings(strings) {
+    let existingMarkup = this.element.innerHTML;
+    if (!existingMarkup) {
+      return strings;
+    }
+    this.element.innerHTML = "";
+    if (this.opts.startDelete) {
+      this.element.innerHTML = existingMarkup;
+      expandTextNodes(this.element);
+      this.#addSplitPause(
+        duplicate(
+          {
+            func: this.#delete.bind(this),
+            delay: this.#getPace(1),
+            deletable: true
+          },
+          this.#allChars.length
+        )
+      );
+      return strings;
+    }
+    return splitOnBreak(existingMarkup).concat(strings);
+  }
+  /**
+   * Provided it's a non-form element and the options is provided,
+   * set up the cursor element for the animation.
+   */
+  #setUpCursor() {
+    if (this.#isInput) {
+      return null;
+    }
+    let cursor = createElement("span");
+    cursor.className = CURSOR_CLASS;
+    if (!this.#shouldRenderCursor) {
+      cursor.style.visibility = "hidden";
+      return cursor;
+    }
+    cursor.innerHTML = getParsedBody(this.opts.cursorChar).innerHTML;
+    return cursor;
+  }
+  #addSplitPause(items) {
+    let delay = this.opts.nextStringDelay;
+    this.queue.add([{ delay: delay[0] }, ...items, { delay: delay[1] }]);
+  }
+  #type(char) {
+    insertIntoElement(this.element, char);
+  }
+  #delete() {
+    if (!this.#allChars.length) return;
+    if (this.#isInput) {
+      this.element.value = this.element.value.slice(0, -1);
+    } else {
+      this.#removeNode(this.#allChars[this.cursorPosition]);
+    }
+  }
+  #removeNode(node) {
+    removeNode(node, this.element);
+  }
+  #getPace(index = 0) {
+    return calculatePace(this.opts)[index];
+  }
+  get #derivedCursorPosition() {
+    return this.predictedCursorPosition ?? this.cursorPosition;
+  }
+  get #isInput() {
+    return isInput(this.element);
+  }
+  get #shouldRenderCursor() {
+    return !!this.opts.cursor && !this.#isInput;
+  }
+  get #allChars() {
+    return getAllChars(this.element);
+  }
+}
+
+
+
+
+/***/ }),
+
 /***/ "?840f":
 /*!************************!*\
   !*** crypto (ignored) ***!
@@ -1438,910 +2460,6 @@ if ( true && module.exports) {
 /***/ (() => {
 
 /* (ignored) */
-
-/***/ }),
-
-/***/ "./node_modules/canvas-confetti/dist/confetti.module.mjs":
-/*!***************************************************************!*\
-  !*** ./node_modules/canvas-confetti/dist/confetti.module.mjs ***!
-  \***************************************************************/
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   create: () => (/* binding */ create),
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-// canvas-confetti v1.9.3 built on 2024-04-30T22:19:17.794Z
-var module = {};
-
-// source content
-/* globals Map */
-
-(function main(global, module, isWorker, workerSize) {
-  var canUseWorker = !!(
-    global.Worker &&
-    global.Blob &&
-    global.Promise &&
-    global.OffscreenCanvas &&
-    global.OffscreenCanvasRenderingContext2D &&
-    global.HTMLCanvasElement &&
-    global.HTMLCanvasElement.prototype.transferControlToOffscreen &&
-    global.URL &&
-    global.URL.createObjectURL);
-
-  var canUsePaths = typeof Path2D === 'function' && typeof DOMMatrix === 'function';
-  var canDrawBitmap = (function () {
-    // this mostly supports ssr
-    if (!global.OffscreenCanvas) {
-      return false;
-    }
-
-    var canvas = new OffscreenCanvas(1, 1);
-    var ctx = canvas.getContext('2d');
-    ctx.fillRect(0, 0, 1, 1);
-    var bitmap = canvas.transferToImageBitmap();
-
-    try {
-      ctx.createPattern(bitmap, 'no-repeat');
-    } catch (e) {
-      return false;
-    }
-
-    return true;
-  })();
-
-  function noop() {}
-
-  // create a promise if it exists, otherwise, just
-  // call the function directly
-  function promise(func) {
-    var ModulePromise = module.exports.Promise;
-    var Prom = ModulePromise !== void 0 ? ModulePromise : global.Promise;
-
-    if (typeof Prom === 'function') {
-      return new Prom(func);
-    }
-
-    func(noop, noop);
-
-    return null;
-  }
-
-  var bitmapMapper = (function (skipTransform, map) {
-    // see https://github.com/catdad/canvas-confetti/issues/209
-    // creating canvases is actually pretty expensive, so we should create a
-    // 1:1 map for bitmap:canvas, so that we can animate the confetti in
-    // a performant manner, but also not store them forever so that we don't
-    // have a memory leak
-    return {
-      transform: function(bitmap) {
-        if (skipTransform) {
-          return bitmap;
-        }
-
-        if (map.has(bitmap)) {
-          return map.get(bitmap);
-        }
-
-        var canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
-        var ctx = canvas.getContext('2d');
-        ctx.drawImage(bitmap, 0, 0);
-
-        map.set(bitmap, canvas);
-
-        return canvas;
-      },
-      clear: function () {
-        map.clear();
-      }
-    };
-  })(canDrawBitmap, new Map());
-
-  var raf = (function () {
-    var TIME = Math.floor(1000 / 60);
-    var frame, cancel;
-    var frames = {};
-    var lastFrameTime = 0;
-
-    if (typeof requestAnimationFrame === 'function' && typeof cancelAnimationFrame === 'function') {
-      frame = function (cb) {
-        var id = Math.random();
-
-        frames[id] = requestAnimationFrame(function onFrame(time) {
-          if (lastFrameTime === time || lastFrameTime + TIME - 1 < time) {
-            lastFrameTime = time;
-            delete frames[id];
-
-            cb();
-          } else {
-            frames[id] = requestAnimationFrame(onFrame);
-          }
-        });
-
-        return id;
-      };
-      cancel = function (id) {
-        if (frames[id]) {
-          cancelAnimationFrame(frames[id]);
-        }
-      };
-    } else {
-      frame = function (cb) {
-        return setTimeout(cb, TIME);
-      };
-      cancel = function (timer) {
-        return clearTimeout(timer);
-      };
-    }
-
-    return { frame: frame, cancel: cancel };
-  }());
-
-  var getWorker = (function () {
-    var worker;
-    var prom;
-    var resolves = {};
-
-    function decorate(worker) {
-      function execute(options, callback) {
-        worker.postMessage({ options: options || {}, callback: callback });
-      }
-      worker.init = function initWorker(canvas) {
-        var offscreen = canvas.transferControlToOffscreen();
-        worker.postMessage({ canvas: offscreen }, [offscreen]);
-      };
-
-      worker.fire = function fireWorker(options, size, done) {
-        if (prom) {
-          execute(options, null);
-          return prom;
-        }
-
-        var id = Math.random().toString(36).slice(2);
-
-        prom = promise(function (resolve) {
-          function workerDone(msg) {
-            if (msg.data.callback !== id) {
-              return;
-            }
-
-            delete resolves[id];
-            worker.removeEventListener('message', workerDone);
-
-            prom = null;
-
-            bitmapMapper.clear();
-
-            done();
-            resolve();
-          }
-
-          worker.addEventListener('message', workerDone);
-          execute(options, id);
-
-          resolves[id] = workerDone.bind(null, { data: { callback: id }});
-        });
-
-        return prom;
-      };
-
-      worker.reset = function resetWorker() {
-        worker.postMessage({ reset: true });
-
-        for (var id in resolves) {
-          resolves[id]();
-          delete resolves[id];
-        }
-      };
-    }
-
-    return function () {
-      if (worker) {
-        return worker;
-      }
-
-      if (!isWorker && canUseWorker) {
-        var code = [
-          'var CONFETTI, SIZE = {}, module = {};',
-          '(' + main.toString() + ')(this, module, true, SIZE);',
-          'onmessage = function(msg) {',
-          '  if (msg.data.options) {',
-          '    CONFETTI(msg.data.options).then(function () {',
-          '      if (msg.data.callback) {',
-          '        postMessage({ callback: msg.data.callback });',
-          '      }',
-          '    });',
-          '  } else if (msg.data.reset) {',
-          '    CONFETTI && CONFETTI.reset();',
-          '  } else if (msg.data.resize) {',
-          '    SIZE.width = msg.data.resize.width;',
-          '    SIZE.height = msg.data.resize.height;',
-          '  } else if (msg.data.canvas) {',
-          '    SIZE.width = msg.data.canvas.width;',
-          '    SIZE.height = msg.data.canvas.height;',
-          '    CONFETTI = module.exports.create(msg.data.canvas);',
-          '  }',
-          '}',
-        ].join('\n');
-        try {
-          worker = new Worker(URL.createObjectURL(new Blob([code])));
-        } catch (e) {
-          // eslint-disable-next-line no-console
-          typeof console !== undefined && typeof console.warn === 'function' ? console.warn('🎊 Could not load worker', e) : null;
-
-          return null;
-        }
-
-        decorate(worker);
-      }
-
-      return worker;
-    };
-  })();
-
-  var defaults = {
-    particleCount: 50,
-    angle: 90,
-    spread: 45,
-    startVelocity: 45,
-    decay: 0.9,
-    gravity: 1,
-    drift: 0,
-    ticks: 200,
-    x: 0.5,
-    y: 0.5,
-    shapes: ['square', 'circle'],
-    zIndex: 100,
-    colors: [
-      '#26ccff',
-      '#a25afd',
-      '#ff5e7e',
-      '#88ff5a',
-      '#fcff42',
-      '#ffa62d',
-      '#ff36ff'
-    ],
-    // probably should be true, but back-compat
-    disableForReducedMotion: false,
-    scalar: 1
-  };
-
-  function convert(val, transform) {
-    return transform ? transform(val) : val;
-  }
-
-  function isOk(val) {
-    return !(val === null || val === undefined);
-  }
-
-  function prop(options, name, transform) {
-    return convert(
-      options && isOk(options[name]) ? options[name] : defaults[name],
-      transform
-    );
-  }
-
-  function onlyPositiveInt(number){
-    return number < 0 ? 0 : Math.floor(number);
-  }
-
-  function randomInt(min, max) {
-    // [min, max)
-    return Math.floor(Math.random() * (max - min)) + min;
-  }
-
-  function toDecimal(str) {
-    return parseInt(str, 16);
-  }
-
-  function colorsToRgb(colors) {
-    return colors.map(hexToRgb);
-  }
-
-  function hexToRgb(str) {
-    var val = String(str).replace(/[^0-9a-f]/gi, '');
-
-    if (val.length < 6) {
-        val = val[0]+val[0]+val[1]+val[1]+val[2]+val[2];
-    }
-
-    return {
-      r: toDecimal(val.substring(0,2)),
-      g: toDecimal(val.substring(2,4)),
-      b: toDecimal(val.substring(4,6))
-    };
-  }
-
-  function getOrigin(options) {
-    var origin = prop(options, 'origin', Object);
-    origin.x = prop(origin, 'x', Number);
-    origin.y = prop(origin, 'y', Number);
-
-    return origin;
-  }
-
-  function setCanvasWindowSize(canvas) {
-    canvas.width = document.documentElement.clientWidth;
-    canvas.height = document.documentElement.clientHeight;
-  }
-
-  function setCanvasRectSize(canvas) {
-    var rect = canvas.getBoundingClientRect();
-    canvas.width = rect.width;
-    canvas.height = rect.height;
-  }
-
-  function getCanvas(zIndex) {
-    var canvas = document.createElement('canvas');
-
-    canvas.style.position = 'fixed';
-    canvas.style.top = '0px';
-    canvas.style.left = '0px';
-    canvas.style.pointerEvents = 'none';
-    canvas.style.zIndex = zIndex;
-
-    return canvas;
-  }
-
-  function ellipse(context, x, y, radiusX, radiusY, rotation, startAngle, endAngle, antiClockwise) {
-    context.save();
-    context.translate(x, y);
-    context.rotate(rotation);
-    context.scale(radiusX, radiusY);
-    context.arc(0, 0, 1, startAngle, endAngle, antiClockwise);
-    context.restore();
-  }
-
-  function randomPhysics(opts) {
-    var radAngle = opts.angle * (Math.PI / 180);
-    var radSpread = opts.spread * (Math.PI / 180);
-
-    return {
-      x: opts.x,
-      y: opts.y,
-      wobble: Math.random() * 10,
-      wobbleSpeed: Math.min(0.11, Math.random() * 0.1 + 0.05),
-      velocity: (opts.startVelocity * 0.5) + (Math.random() * opts.startVelocity),
-      angle2D: -radAngle + ((0.5 * radSpread) - (Math.random() * radSpread)),
-      tiltAngle: (Math.random() * (0.75 - 0.25) + 0.25) * Math.PI,
-      color: opts.color,
-      shape: opts.shape,
-      tick: 0,
-      totalTicks: opts.ticks,
-      decay: opts.decay,
-      drift: opts.drift,
-      random: Math.random() + 2,
-      tiltSin: 0,
-      tiltCos: 0,
-      wobbleX: 0,
-      wobbleY: 0,
-      gravity: opts.gravity * 3,
-      ovalScalar: 0.6,
-      scalar: opts.scalar,
-      flat: opts.flat
-    };
-  }
-
-  function updateFetti(context, fetti) {
-    fetti.x += Math.cos(fetti.angle2D) * fetti.velocity + fetti.drift;
-    fetti.y += Math.sin(fetti.angle2D) * fetti.velocity + fetti.gravity;
-    fetti.velocity *= fetti.decay;
-
-    if (fetti.flat) {
-      fetti.wobble = 0;
-      fetti.wobbleX = fetti.x + (10 * fetti.scalar);
-      fetti.wobbleY = fetti.y + (10 * fetti.scalar);
-
-      fetti.tiltSin = 0;
-      fetti.tiltCos = 0;
-      fetti.random = 1;
-    } else {
-      fetti.wobble += fetti.wobbleSpeed;
-      fetti.wobbleX = fetti.x + ((10 * fetti.scalar) * Math.cos(fetti.wobble));
-      fetti.wobbleY = fetti.y + ((10 * fetti.scalar) * Math.sin(fetti.wobble));
-
-      fetti.tiltAngle += 0.1;
-      fetti.tiltSin = Math.sin(fetti.tiltAngle);
-      fetti.tiltCos = Math.cos(fetti.tiltAngle);
-      fetti.random = Math.random() + 2;
-    }
-
-    var progress = (fetti.tick++) / fetti.totalTicks;
-
-    var x1 = fetti.x + (fetti.random * fetti.tiltCos);
-    var y1 = fetti.y + (fetti.random * fetti.tiltSin);
-    var x2 = fetti.wobbleX + (fetti.random * fetti.tiltCos);
-    var y2 = fetti.wobbleY + (fetti.random * fetti.tiltSin);
-
-    context.fillStyle = 'rgba(' + fetti.color.r + ', ' + fetti.color.g + ', ' + fetti.color.b + ', ' + (1 - progress) + ')';
-
-    context.beginPath();
-
-    if (canUsePaths && fetti.shape.type === 'path' && typeof fetti.shape.path === 'string' && Array.isArray(fetti.shape.matrix)) {
-      context.fill(transformPath2D(
-        fetti.shape.path,
-        fetti.shape.matrix,
-        fetti.x,
-        fetti.y,
-        Math.abs(x2 - x1) * 0.1,
-        Math.abs(y2 - y1) * 0.1,
-        Math.PI / 10 * fetti.wobble
-      ));
-    } else if (fetti.shape.type === 'bitmap') {
-      var rotation = Math.PI / 10 * fetti.wobble;
-      var scaleX = Math.abs(x2 - x1) * 0.1;
-      var scaleY = Math.abs(y2 - y1) * 0.1;
-      var width = fetti.shape.bitmap.width * fetti.scalar;
-      var height = fetti.shape.bitmap.height * fetti.scalar;
-
-      var matrix = new DOMMatrix([
-        Math.cos(rotation) * scaleX,
-        Math.sin(rotation) * scaleX,
-        -Math.sin(rotation) * scaleY,
-        Math.cos(rotation) * scaleY,
-        fetti.x,
-        fetti.y
-      ]);
-
-      // apply the transform matrix from the confetti shape
-      matrix.multiplySelf(new DOMMatrix(fetti.shape.matrix));
-
-      var pattern = context.createPattern(bitmapMapper.transform(fetti.shape.bitmap), 'no-repeat');
-      pattern.setTransform(matrix);
-
-      context.globalAlpha = (1 - progress);
-      context.fillStyle = pattern;
-      context.fillRect(
-        fetti.x - (width / 2),
-        fetti.y - (height / 2),
-        width,
-        height
-      );
-      context.globalAlpha = 1;
-    } else if (fetti.shape === 'circle') {
-      context.ellipse ?
-        context.ellipse(fetti.x, fetti.y, Math.abs(x2 - x1) * fetti.ovalScalar, Math.abs(y2 - y1) * fetti.ovalScalar, Math.PI / 10 * fetti.wobble, 0, 2 * Math.PI) :
-        ellipse(context, fetti.x, fetti.y, Math.abs(x2 - x1) * fetti.ovalScalar, Math.abs(y2 - y1) * fetti.ovalScalar, Math.PI / 10 * fetti.wobble, 0, 2 * Math.PI);
-    } else if (fetti.shape === 'star') {
-      var rot = Math.PI / 2 * 3;
-      var innerRadius = 4 * fetti.scalar;
-      var outerRadius = 8 * fetti.scalar;
-      var x = fetti.x;
-      var y = fetti.y;
-      var spikes = 5;
-      var step = Math.PI / spikes;
-
-      while (spikes--) {
-        x = fetti.x + Math.cos(rot) * outerRadius;
-        y = fetti.y + Math.sin(rot) * outerRadius;
-        context.lineTo(x, y);
-        rot += step;
-
-        x = fetti.x + Math.cos(rot) * innerRadius;
-        y = fetti.y + Math.sin(rot) * innerRadius;
-        context.lineTo(x, y);
-        rot += step;
-      }
-    } else {
-      context.moveTo(Math.floor(fetti.x), Math.floor(fetti.y));
-      context.lineTo(Math.floor(fetti.wobbleX), Math.floor(y1));
-      context.lineTo(Math.floor(x2), Math.floor(y2));
-      context.lineTo(Math.floor(x1), Math.floor(fetti.wobbleY));
-    }
-
-    context.closePath();
-    context.fill();
-
-    return fetti.tick < fetti.totalTicks;
-  }
-
-  function animate(canvas, fettis, resizer, size, done) {
-    var animatingFettis = fettis.slice();
-    var context = canvas.getContext('2d');
-    var animationFrame;
-    var destroy;
-
-    var prom = promise(function (resolve) {
-      function onDone() {
-        animationFrame = destroy = null;
-
-        context.clearRect(0, 0, size.width, size.height);
-        bitmapMapper.clear();
-
-        done();
-        resolve();
-      }
-
-      function update() {
-        if (isWorker && !(size.width === workerSize.width && size.height === workerSize.height)) {
-          size.width = canvas.width = workerSize.width;
-          size.height = canvas.height = workerSize.height;
-        }
-
-        if (!size.width && !size.height) {
-          resizer(canvas);
-          size.width = canvas.width;
-          size.height = canvas.height;
-        }
-
-        context.clearRect(0, 0, size.width, size.height);
-
-        animatingFettis = animatingFettis.filter(function (fetti) {
-          return updateFetti(context, fetti);
-        });
-
-        if (animatingFettis.length) {
-          animationFrame = raf.frame(update);
-        } else {
-          onDone();
-        }
-      }
-
-      animationFrame = raf.frame(update);
-      destroy = onDone;
-    });
-
-    return {
-      addFettis: function (fettis) {
-        animatingFettis = animatingFettis.concat(fettis);
-
-        return prom;
-      },
-      canvas: canvas,
-      promise: prom,
-      reset: function () {
-        if (animationFrame) {
-          raf.cancel(animationFrame);
-        }
-
-        if (destroy) {
-          destroy();
-        }
-      }
-    };
-  }
-
-  function confettiCannon(canvas, globalOpts) {
-    var isLibCanvas = !canvas;
-    var allowResize = !!prop(globalOpts || {}, 'resize');
-    var hasResizeEventRegistered = false;
-    var globalDisableForReducedMotion = prop(globalOpts, 'disableForReducedMotion', Boolean);
-    var shouldUseWorker = canUseWorker && !!prop(globalOpts || {}, 'useWorker');
-    var worker = shouldUseWorker ? getWorker() : null;
-    var resizer = isLibCanvas ? setCanvasWindowSize : setCanvasRectSize;
-    var initialized = (canvas && worker) ? !!canvas.__confetti_initialized : false;
-    var preferLessMotion = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion)').matches;
-    var animationObj;
-
-    function fireLocal(options, size, done) {
-      var particleCount = prop(options, 'particleCount', onlyPositiveInt);
-      var angle = prop(options, 'angle', Number);
-      var spread = prop(options, 'spread', Number);
-      var startVelocity = prop(options, 'startVelocity', Number);
-      var decay = prop(options, 'decay', Number);
-      var gravity = prop(options, 'gravity', Number);
-      var drift = prop(options, 'drift', Number);
-      var colors = prop(options, 'colors', colorsToRgb);
-      var ticks = prop(options, 'ticks', Number);
-      var shapes = prop(options, 'shapes');
-      var scalar = prop(options, 'scalar');
-      var flat = !!prop(options, 'flat');
-      var origin = getOrigin(options);
-
-      var temp = particleCount;
-      var fettis = [];
-
-      var startX = canvas.width * origin.x;
-      var startY = canvas.height * origin.y;
-
-      while (temp--) {
-        fettis.push(
-          randomPhysics({
-            x: startX,
-            y: startY,
-            angle: angle,
-            spread: spread,
-            startVelocity: startVelocity,
-            color: colors[temp % colors.length],
-            shape: shapes[randomInt(0, shapes.length)],
-            ticks: ticks,
-            decay: decay,
-            gravity: gravity,
-            drift: drift,
-            scalar: scalar,
-            flat: flat
-          })
-        );
-      }
-
-      // if we have a previous canvas already animating,
-      // add to it
-      if (animationObj) {
-        return animationObj.addFettis(fettis);
-      }
-
-      animationObj = animate(canvas, fettis, resizer, size , done);
-
-      return animationObj.promise;
-    }
-
-    function fire(options) {
-      var disableForReducedMotion = globalDisableForReducedMotion || prop(options, 'disableForReducedMotion', Boolean);
-      var zIndex = prop(options, 'zIndex', Number);
-
-      if (disableForReducedMotion && preferLessMotion) {
-        return promise(function (resolve) {
-          resolve();
-        });
-      }
-
-      if (isLibCanvas && animationObj) {
-        // use existing canvas from in-progress animation
-        canvas = animationObj.canvas;
-      } else if (isLibCanvas && !canvas) {
-        // create and initialize a new canvas
-        canvas = getCanvas(zIndex);
-        document.body.appendChild(canvas);
-      }
-
-      if (allowResize && !initialized) {
-        // initialize the size of a user-supplied canvas
-        resizer(canvas);
-      }
-
-      var size = {
-        width: canvas.width,
-        height: canvas.height
-      };
-
-      if (worker && !initialized) {
-        worker.init(canvas);
-      }
-
-      initialized = true;
-
-      if (worker) {
-        canvas.__confetti_initialized = true;
-      }
-
-      function onResize() {
-        if (worker) {
-          // TODO this really shouldn't be immediate, because it is expensive
-          var obj = {
-            getBoundingClientRect: function () {
-              if (!isLibCanvas) {
-                return canvas.getBoundingClientRect();
-              }
-            }
-          };
-
-          resizer(obj);
-
-          worker.postMessage({
-            resize: {
-              width: obj.width,
-              height: obj.height
-            }
-          });
-          return;
-        }
-
-        // don't actually query the size here, since this
-        // can execute frequently and rapidly
-        size.width = size.height = null;
-      }
-
-      function done() {
-        animationObj = null;
-
-        if (allowResize) {
-          hasResizeEventRegistered = false;
-          global.removeEventListener('resize', onResize);
-        }
-
-        if (isLibCanvas && canvas) {
-          if (document.body.contains(canvas)) {
-            document.body.removeChild(canvas); 
-          }
-          canvas = null;
-          initialized = false;
-        }
-      }
-
-      if (allowResize && !hasResizeEventRegistered) {
-        hasResizeEventRegistered = true;
-        global.addEventListener('resize', onResize, false);
-      }
-
-      if (worker) {
-        return worker.fire(options, size, done);
-      }
-
-      return fireLocal(options, size, done);
-    }
-
-    fire.reset = function () {
-      if (worker) {
-        worker.reset();
-      }
-
-      if (animationObj) {
-        animationObj.reset();
-      }
-    };
-
-    return fire;
-  }
-
-  // Make default export lazy to defer worker creation until called.
-  var defaultFire;
-  function getDefaultFire() {
-    if (!defaultFire) {
-      defaultFire = confettiCannon(null, { useWorker: true, resize: true });
-    }
-    return defaultFire;
-  }
-
-  function transformPath2D(pathString, pathMatrix, x, y, scaleX, scaleY, rotation) {
-    var path2d = new Path2D(pathString);
-
-    var t1 = new Path2D();
-    t1.addPath(path2d, new DOMMatrix(pathMatrix));
-
-    var t2 = new Path2D();
-    // see https://developer.mozilla.org/en-US/docs/Web/API/DOMMatrix/DOMMatrix
-    t2.addPath(t1, new DOMMatrix([
-      Math.cos(rotation) * scaleX,
-      Math.sin(rotation) * scaleX,
-      -Math.sin(rotation) * scaleY,
-      Math.cos(rotation) * scaleY,
-      x,
-      y
-    ]));
-
-    return t2;
-  }
-
-  function shapeFromPath(pathData) {
-    if (!canUsePaths) {
-      throw new Error('path confetti are not supported in this browser');
-    }
-
-    var path, matrix;
-
-    if (typeof pathData === 'string') {
-      path = pathData;
-    } else {
-      path = pathData.path;
-      matrix = pathData.matrix;
-    }
-
-    var path2d = new Path2D(path);
-    var tempCanvas = document.createElement('canvas');
-    var tempCtx = tempCanvas.getContext('2d');
-
-    if (!matrix) {
-      // attempt to figure out the width of the path, up to 1000x1000
-      var maxSize = 1000;
-      var minX = maxSize;
-      var minY = maxSize;
-      var maxX = 0;
-      var maxY = 0;
-      var width, height;
-
-      // do some line skipping... this is faster than checking
-      // every pixel and will be mostly still correct
-      for (var x = 0; x < maxSize; x += 2) {
-        for (var y = 0; y < maxSize; y += 2) {
-          if (tempCtx.isPointInPath(path2d, x, y, 'nonzero')) {
-            minX = Math.min(minX, x);
-            minY = Math.min(minY, y);
-            maxX = Math.max(maxX, x);
-            maxY = Math.max(maxY, y);
-          }
-        }
-      }
-
-      width = maxX - minX;
-      height = maxY - minY;
-
-      var maxDesiredSize = 10;
-      var scale = Math.min(maxDesiredSize/width, maxDesiredSize/height);
-
-      matrix = [
-        scale, 0, 0, scale,
-        -Math.round((width/2) + minX) * scale,
-        -Math.round((height/2) + minY) * scale
-      ];
-    }
-
-    return {
-      type: 'path',
-      path: path,
-      matrix: matrix
-    };
-  }
-
-  function shapeFromText(textData) {
-    var text,
-        scalar = 1,
-        color = '#000000',
-        // see https://nolanlawson.com/2022/04/08/the-struggle-of-using-native-emoji-on-the-web/
-        fontFamily = '"Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", "EmojiOne Color", "Android Emoji", "Twemoji Mozilla", "system emoji", sans-serif';
-
-    if (typeof textData === 'string') {
-      text = textData;
-    } else {
-      text = textData.text;
-      scalar = 'scalar' in textData ? textData.scalar : scalar;
-      fontFamily = 'fontFamily' in textData ? textData.fontFamily : fontFamily;
-      color = 'color' in textData ? textData.color : color;
-    }
-
-    // all other confetti are 10 pixels,
-    // so this pixel size is the de-facto 100% scale confetti
-    var fontSize = 10 * scalar;
-    var font = '' + fontSize + 'px ' + fontFamily;
-
-    var canvas = new OffscreenCanvas(fontSize, fontSize);
-    var ctx = canvas.getContext('2d');
-
-    ctx.font = font;
-    var size = ctx.measureText(text);
-    var width = Math.ceil(size.actualBoundingBoxRight + size.actualBoundingBoxLeft);
-    var height = Math.ceil(size.actualBoundingBoxAscent + size.actualBoundingBoxDescent);
-
-    var padding = 2;
-    var x = size.actualBoundingBoxLeft + padding;
-    var y = size.actualBoundingBoxAscent + padding;
-    width += padding + padding;
-    height += padding + padding;
-
-    canvas = new OffscreenCanvas(width, height);
-    ctx = canvas.getContext('2d');
-    ctx.font = font;
-    ctx.fillStyle = color;
-
-    ctx.fillText(text, x, y);
-
-    var scale = 1 / scalar;
-
-    return {
-      type: 'bitmap',
-      // TODO these probably need to be transfered for workers
-      bitmap: canvas.transferToImageBitmap(),
-      matrix: [scale, 0, 0, scale, -width * scale / 2, -height * scale / 2]
-    };
-  }
-
-  module.exports = function() {
-    return getDefaultFire().apply(this, arguments);
-  };
-  module.exports.reset = function() {
-    getDefaultFire().reset();
-  };
-  module.exports.create = confettiCannon;
-  module.exports.shapeFromPath = shapeFromPath;
-  module.exports.shapeFromText = shapeFromText;
-}((function () {
-  if (typeof window !== 'undefined') {
-    return window;
-  }
-
-  if (typeof self !== 'undefined') {
-    return self;
-  }
-
-  return this || {};
-})(), module, false));
-
-// end source content
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (module.exports);
-var create = module.exports.create;
-
 
 /***/ }),
 

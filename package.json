@@ -29,7 +29,7 @@
     "tailwindcss": "^3.4.15"
   },
   "dependencies": {
-    "canvas-confetti": "^1.9.3",
-    "random-words": "^2.0.1"
+    "random-words": "^2.0.1",
+    "typeit": "^8.8.7"
   }
 }

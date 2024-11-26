@@ -10,16 +10,15 @@
 // Finding complete sets of brackets within the garble on one row either removes incorrect/dud words or resets your attempts
 // Successfully hacking a terminal may allow one to: access information, disable or enable turrets or spotlights, alarm systems, and various other defenses or traps, open locked doors or safes.
 
-// TODO:
-// - typing animation
-// - updated visuals?
-// - login terminal
-// - better success screen
+// VARS + IMPORTS
 
-// VARS + GLOBALS + IMPORTS
-
-import confetti from "canvas-confetti";
-import { generate } from "random-words";
+import {
+  randomNumberGenerator,
+  generateRandomHex,
+  multipleRandomNumberGenerator,
+  generateRandomWords,
+  typer,
+} from "./components/utils";
 
 const terminalScreen = document.getElementById("terminal-screen");
 const terminalOutput = document.getElementById("terminal-output");
@@ -67,76 +66,6 @@ const TOTAL_ROWS = 32;
 let passwordLength = 5;
 let passwordFrequency = 20;
 
-// UTIL FUNCTIONS
-
-/**
- * Generates a random number from min (inclusive) to max (inclusive)
- *
- * @param {number} max - The maximum number to generate
- * @param {number} min - The minimum number to generate
- * @returns {number} A random number from 0 to max
- * @throws {Error} If the max is not a positive numerical value.
- */
-const randomNumberGenerator = (max, min = 0) => {
-  if (!Number.isFinite(max) || max <= 0) {
-    throw new Error(
-      "Maximum value must be a non-negative non-zero numerical value",
-    );
-  }
-
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-};
-
-/**
- * Generates an array of random numbers from 0 to max
- *
- * @param {number} max - The maximum number to generate
- * @param {number} length - The maximum numbers to generate
- * @param {number} [minDifference = 0] - The minimum difference between each number.
- * @returns {number[]} A random array of numbers matching length
- */
-const multipleRandomNumberGenerator = (max, length, minDifference = 0) => {
-  if (length < 0)
-    throw new Error("Length must be a non-negative non-zero number");
-
-  if (max < length)
-    throw new Error(
-      `Cannot get ${length} distinct values from ${max} options!`,
-    );
-
-  // Use a set to avoid duplicate values
-  const values = new Set();
-
-  // While the set is not fully populated
-  while (values.size < length) {
-    // Generate random values to add to it
-    const randomValue = randomNumberGenerator(max);
-
-    // Ensure the minDifference spacing is respected before adding values
-    if (
-      [...values].every(
-        (value) => Math.abs(value - randomValue) >= minDifference,
-      )
-    ) {
-      values.add(randomValue);
-    }
-  }
-
-  // Return an array of spaced values
-  return [...values];
-};
-
-/**
- * Generates an array of random words of a given length
- *
- * @param {number} max - The maximum number of words to generate
- * @param {number} length - The length of the words
- * @returns {string[]} An array of words
- */
-const generateRandomWords = (max, length) =>
-  // FIXME: known bug - this generation of random words does NOT prevent duplicate words, which can cause problems
-  generate({ exactly: max, minLength: length, maxLength: length });
-
 /**
  * Generates an array of random special characters.
  *
@@ -157,21 +86,6 @@ const generateGarble = (length) => {
 
   return garble;
 };
-
-/**
- * Generates a random hexadecimal number of a given size
- *
- * @param {number} size - The length of the hexadecimal value to generate
- * @returns {string} A random hexadecimal value
- */
-const getRandomHexadecimal = (size) =>
-  Array.from({ length: size }, () =>
-    Math.floor(Math.random() * 16)
-      .toString(16)
-      .toUpperCase(),
-  ).join("");
-
-// MAIN FUNCTIONS
 
 const generateHackablePuzzle = () => {
   // Generate an array of length 384 filled wth special characters for the bulk/base of the puzzle output
@@ -219,7 +133,7 @@ const displayPuzzle = (puzzle) => {
     const row = document.createElement("div");
 
     // Every row must start with a random hexadecimal number
-    const randomHexadecimal = getRandomHexadecimal(4);
+    const randomHexadecimal = generateRandomHex(4);
 
     const hexadecimalPrefix = document.createElement("span");
     hexadecimalPrefix.innerHTML = `0x${randomHexadecimal} `;
@@ -255,6 +169,14 @@ const displayPuzzle = (puzzle) => {
     }
 
     fragment.appendChild(row);
+
+    // Create typing effect as the puzzle is generated
+
+    typer(row, {
+      strings: [],
+      speed: randomNumberGenerator(50, 25),
+      cursor: false,
+    });
   }
 
   terminalScreen.appendChild(fragment);
@@ -319,13 +241,6 @@ const handlePasswordGuess = (e, puzzle) => {
     restartButton.id = "restartButton";
 
     terminalOutput.append(restartButton);
-
-    confetti({
-      angle: randomNumberGenerator(125, 55),
-      spread: randomNumberGenerator(70, 50),
-      particleCount: randomNumberGenerator(100, 50),
-      origin: { y: 0.6 },
-    });
 
     return;
   }
