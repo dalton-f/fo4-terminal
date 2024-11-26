@@ -1,5 +1,5 @@
 <!doctype html>
-<html class="font-shareTechMono bg-[#111] antialiased" lang="en">
+<html class="bg-[#111] font-shareTechMono antialiased" lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -19,15 +19,6 @@
   <body>
     <main>
       <section class="flex flex-col gap-8 p-16">
-        <div>
-          <select id="difficultySelector" class="px-4 py-2">
-            <option value="" disabled selected>Select a difficulty</option>
-            <option value="easy">Easy</option>
-            <option value="normal">Normal</option>
-            <option value="hard">Hard</option>
-            <option value="extrahard">Extra hard</option>
-          </select>
-        </div>
         <!-- Monitor -->
         <div>
           <!-- Screen -->
@@ -38,7 +29,12 @@
             <div class="flex items-center gap-4">
               <p>Attempts Remaining:</p>
 
-              <div class="flex items-center gap-4" id="attempts"></div>
+              <div class="flex items-center gap-4" id="attempts">
+                <div class="size-4 bg-[#5bf870]"></div>
+                <div class="size-4 bg-[#5bf870]"></div>
+                <div class="size-4 bg-[#5bf870]"></div>
+                <div class="size-4 bg-[#5bf870]"></div>
+              </div>
             </div>
 
             <!-- Terminal -->

@@ -9,7 +9,7 @@
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _components_utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components/utils */ "./src/js/components/utils.js");
+/* harmony import */ var _components_hacker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components/hacker */ "./src/js/components/hacker.js");
 // INFO + CONTEXT
 
 // Terminals in the Fallout francise include a gameplay mechanic/minigame "Hacking" to unlock the terminals. The game has similariies to the board game "Mastermind",
@@ -22,20 +22,37 @@ __webpack_require__.r(__webpack_exports__);
 // Finding complete sets of brackets within the garble on one row either removes incorrect/dud words or resets your attempts
 // Successfully hacking a terminal may allow one to: access information, disable or enable turrets or spotlights, alarm systems, and various other defenses or traps, open locked doors or safes.
 
+
+document.addEventListener("DOMContentLoaded", function () {
+  (0,_components_hacker__WEBPACK_IMPORTED_MODULE_0__.initializeHackerGame)();
+});
+
+/***/ }),
+
+/***/ "./src/js/components/hacker.js":
+/*!*************************************!*\
+  !*** ./src/js/components/hacker.js ***!
+  \*************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   initializeHackerGame: () => (/* binding */ initializeHackerGame)
+/* harmony export */ });
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils */ "./src/js/components/utils.js");
 // VARS + IMPORTS
 
 
 var terminalScreen = document.getElementById("terminal-screen");
 var terminalOutput = document.getElementById("terminal-output");
 var attemptsCounter = document.getElementById("attempts");
-var difficultySelector = document.getElementById("difficultySelector");
 var attemptCount = 4;
-var hoverListener, outListener, clickListener;
 var SPECIAL_CHARACTERS = ["!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "_", "[", "]", "{", "}", "<", ">", "|", "'", ";", ":", "/", "?", ",", ".", ";"];
 var TOTAL_CHARACTERS_PER_ROW = 12;
 var TOTAL_ROWS = 32;
-var passwordLength = 5;
-var passwordFrequency = 20;
+var PASSWORD_LENGTH = 5;
+var PASSWORD_FREQUENCY = 20;
 
 /**
  * Generates an array of random special characters.
@@ -51,7 +68,7 @@ var generateGarble = function generateGarble(length) {
   var garble = Array.from({
     length: length
   }, function () {
-    return SPECIAL_CHARACTERS[(0,_components_utils__WEBPACK_IMPORTED_MODULE_0__.randomNumberGenerator)(SPECIAL_CHARACTERS.length - 1)];
+    return SPECIAL_CHARACTERS[(0,_utils__WEBPACK_IMPORTED_MODULE_0__.randomNumberGenerator)(0, SPECIAL_CHARACTERS.length - 1)];
   });
   return garble;
 };
@@ -60,11 +77,11 @@ var generateHackablePuzzle = function generateHackablePuzzle() {
   var output = generateGarble(TOTAL_ROWS * TOTAL_CHARACTERS_PER_ROW);
 
   // Generate an array of unqiue random index positions from 0 to 384 - password length (so no password gets cut off) for the positions of the passwords within the puzzle
-  var passwordPositions = (0,_components_utils__WEBPACK_IMPORTED_MODULE_0__.multipleRandomNumberGenerator)(TOTAL_ROWS * TOTAL_CHARACTERS_PER_ROW - passwordLength, passwordFrequency, passwordLength + 1);
+  var passwordPositions = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.multipleRandomNumberGenerator)(0, TOTAL_ROWS * TOTAL_CHARACTERS_PER_ROW - PASSWORD_LENGTH, PASSWORD_FREQUENCY, PASSWORD_LENGTH + 1);
 
   // Generate 20 random 5 letters words to act as either the password or dud
-  var passwords = (0,_components_utils__WEBPACK_IMPORTED_MODULE_0__.generateRandomWords)(passwordFrequency, passwordLength);
-  var correctPassword = passwords[(0,_components_utils__WEBPACK_IMPORTED_MODULE_0__.randomNumberGenerator)(passwords.length - 1)];
+  var passwords = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.generateRandomWords)(PASSWORD_FREQUENCY, PASSWORD_LENGTH);
+  var correctPassword = passwords[(0,_utils__WEBPACK_IMPORTED_MODULE_0__.randomNumberGenerator)(0, passwords.length - 1)];
 
   // Use the passwords and their randomly generated positions to add them into the output
   for (var i = 0; i < passwordPositions.length; i++) {
@@ -96,7 +113,7 @@ var displayPuzzle = function displayPuzzle(puzzle) {
     var row = document.createElement("div");
 
     // Every row must start with a random hexadecimal number
-    var randomHexadecimal = (0,_components_utils__WEBPACK_IMPORTED_MODULE_0__.generateRandomHex)(4);
+    var randomHexadecimal = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.generateRandomHex)(4);
     var hexadecimalPrefix = document.createElement("span");
     hexadecimalPrefix.innerHTML = "0x".concat(randomHexadecimal, " ");
     row.appendChild(hexadecimalPrefix);
@@ -122,9 +139,9 @@ var displayPuzzle = function displayPuzzle(puzzle) {
 
     // Create typing effect as the puzzle is generated
 
-    (0,_components_utils__WEBPACK_IMPORTED_MODULE_0__.typer)(row, {
+    (0,_utils__WEBPACK_IMPORTED_MODULE_0__.typer)(row, {
       strings: [],
-      speed: (0,_components_utils__WEBPACK_IMPORTED_MODULE_0__.randomNumberGenerator)(50, 25),
+      speed: (0,_utils__WEBPACK_IMPORTED_MODULE_0__.randomNumberGenerator)(30, 45),
       cursor: false
     });
   }
@@ -174,10 +191,6 @@ var handlePasswordGuess = function handlePasswordGuess(e, puzzle) {
     var successMessage = document.createElement("div");
     successMessage.innerHTML = "Terminal unlocked";
     terminalOutput.append(successMessage);
-    var restartButton = document.createElement("button");
-    restartButton.innerHTML = "Click to restart";
-    restartButton.id = "restartButton";
-    terminalOutput.append(restartButton);
     return;
   }
 
@@ -201,87 +214,32 @@ var handlePasswordGuess = function handlePasswordGuess(e, puzzle) {
 
   // Delete the last child of the attempt squares
   attemptsCounter.removeChild(attemptsCounter.lastElementChild);
-  if (attemptCount === 0) {
-    var lockout = document.createElement("div");
-    lockout.innerHTML = "Terminal locked";
-    terminalOutput.appendChild(lockout);
-    var _restartButton = document.createElement("button");
-    _restartButton.innerHTML = "Click to restart";
-    _restartButton.id = "restartButton";
-    terminalOutput.append(_restartButton);
-  }
+  if (attemptCount === 0) handleTerminalLockout();
 };
-var resetGame = function resetGame() {
-  resetEventListeners();
-  terminalScreen.innerHTML = "";
-  terminalOutput.innerHTML = "";
-  // Manually reset counter
-  attemptsCounter.innerHTML = "\n  <div class=\"size-4 bg-[#5bf870]\"></div>\n  <div class=\"size-4 bg-[#5bf870]\"></div>\n  <div class=\"size-4 bg-[#5bf870]\"></div>\n  <div class=\"size-4 bg-[#5bf870]\"></div>";
-  attemptCount = 4;
-  initializeGame();
+var handleTerminalLockout = function handleTerminalLockout() {
+  var lockout = document.createElement("div");
+  lockout.innerHTML = "Terminal locked";
+  terminalOutput.appendChild(lockout);
 };
-var initializeGame = function initializeGame() {
+var initializeHackerGame = function initializeHackerGame() {
   var puzzle = generateHackablePuzzle();
 
   // Display the puzzle after it has been generated
   displayPuzzle(puzzle);
 
   // Add appropriate event listeners
-  initEventListeners(puzzle);
+
+  terminalScreen.addEventListener("mouseover", function (e) {
+    return handlePasswordHover(e, true);
+  });
+  terminalScreen.addEventListener("mouseout", function (e) {
+    return handlePasswordHover(e, false);
+  });
+  terminalScreen.addEventListener("click", function (e) {
+    return handlePasswordGuess(e, puzzle);
+  });
   return puzzle;
 };
-
-// Remove any event listeners
-var resetEventListeners = function resetEventListeners() {
-  terminalScreen.removeEventListener("mouseover", hoverListener);
-  terminalScreen.removeEventListener("mouseout", outListener);
-  terminalScreen.removeEventListener("click", clickListener);
-};
-
-// Add all event listeners needed for the game
-var initEventListeners = function initEventListeners(puzzle) {
-  hoverListener = function hoverListener(e) {
-    return handlePasswordHover(e, true);
-  };
-  outListener = function outListener(e) {
-    return handlePasswordHover(e, false);
-  };
-  clickListener = function clickListener(e) {
-    return handlePasswordGuess(e, puzzle);
-  };
-  terminalScreen.addEventListener("mouseover", hoverListener);
-  terminalScreen.addEventListener("mouseout", outListener);
-  terminalScreen.addEventListener("click", clickListener);
-};
-
-// Handle game resets
-document.addEventListener("click", function (e) {
-  if (e.target.id === "restartButton") resetGame();
-});
-
-// Reset game if difficulty changes
-difficultySelector.addEventListener("change", function () {
-  var selectedDifficulty = difficultySelector.value;
-  switch (selectedDifficulty) {
-    case "easy":
-      passwordLength = 4;
-      passwordFrequency = 10;
-      break;
-    case "normal":
-      passwordLength = 5;
-      passwordFrequency = 20;
-      break;
-    case "hard":
-      passwordLength = 7;
-      passwordFrequency = 15;
-      break;
-    case "extrahard":
-      passwordLength = 10;
-      passwordFrequency = 10;
-      break;
-  }
-  resetGame();
-});
 
 /***/ }),
 
@@ -319,8 +277,7 @@ function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length)
  * @returns {number} A random number from 0 to max
  * @throws {Error} If the max is not a positive numerical value.
  */
-var randomNumberGenerator = function randomNumberGenerator(max) {
-  var min = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+var randomNumberGenerator = function randomNumberGenerator(min, max) {
   if (!Number.isFinite(max) || max <= 0) {
     throw new Error("Maximum value must be a non-negative non-zero numerical value");
   }
@@ -330,13 +287,14 @@ var randomNumberGenerator = function randomNumberGenerator(max) {
 /**
  * Generates an array of random numbers from 0 to max
  *
+ * @param {number} min - The minimum number to generate
  * @param {number} max - The maximum number to generate
  * @param {number} length - The maximum numbers to generate
  * @param {number} [minDifference = 0] - The minimum difference between each number.
  * @returns {number[]} A random array of numbers matching length
  */
-var multipleRandomNumberGenerator = function multipleRandomNumberGenerator(max, length) {
-  var minDifference = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+var multipleRandomNumberGenerator = function multipleRandomNumberGenerator(min, max, length) {
+  var minDifference = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
   if (length < 0) throw new Error("Length must be a non-negative non-zero number");
   if (max < length) throw new Error("Cannot get ".concat(length, " distinct values from ").concat(max, " options!"));
 
@@ -346,7 +304,7 @@ var multipleRandomNumberGenerator = function multipleRandomNumberGenerator(max, 
   // While the set is not fully populated
   var _loop = function _loop() {
     // Generate random values to add to it
-    var randomValue = randomNumberGenerator(max);
+    var randomValue = randomNumberGenerator(min, max);
 
     // Ensure the minDifference spacing is respected before adding values
     if (_toConsumableArray(values).every(function (value) {

@@ -10,7 +10,7 @@ import TypeIt from "typeit";
  * @returns {number} A random number from 0 to max
  * @throws {Error} If the max is not a positive numerical value.
  */
-export const randomNumberGenerator = (max, min = 0) => {
+export const randomNumberGenerator = (min, max) => {
   if (!Number.isFinite(max) || max <= 0) {
     throw new Error(
       "Maximum value must be a non-negative non-zero numerical value",
@@ -23,12 +23,14 @@ export const randomNumberGenerator = (max, min = 0) => {
 /**
  * Generates an array of random numbers from 0 to max
  *
+ * @param {number} min - The minimum number to generate
  * @param {number} max - The maximum number to generate
  * @param {number} length - The maximum numbers to generate
  * @param {number} [minDifference = 0] - The minimum difference between each number.
  * @returns {number[]} A random array of numbers matching length
  */
 export const multipleRandomNumberGenerator = (
+  min,
   max,
   length,
   minDifference = 0,
@@ -47,7 +49,7 @@ export const multipleRandomNumberGenerator = (
   // While the set is not fully populated
   while (values.size < length) {
     // Generate random values to add to it
-    const randomValue = randomNumberGenerator(max);
+    const randomValue = randomNumberGenerator(min, max);
 
     // Ensure the minDifference spacing is respected before adding values
     if (
