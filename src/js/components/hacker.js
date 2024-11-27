@@ -8,9 +8,16 @@ import {
   typer,
 } from "./utils";
 
-const terminalScreen = document.getElementById("terminal-screen");
-const terminalOutput = document.getElementById("terminal-output");
-const attemptsCounter = document.getElementById("attempts");
+const terminal = document.getElementById("terminal");
+
+// Add new container for the game
+const game = document.createElement("div");
+
+// Add a container for the puzzle
+const cipher = document.createElement("div");
+
+// Add a container for the guess output info
+const guessOutput = document.createElement("div");
 
 let attemptCount = 4;
 
@@ -106,67 +113,93 @@ const generateHackablePuzzle = () => {
 };
 
 const displayPuzzle = (puzzle) => {
-  // Get extra information from during the puzzle generation
-  const { output, passwordPositions, passwords } = puzzle;
+  // Initial typing setup
+  typer(terminal, {
+    strings: [
+      "Welcome to ROBCO Industries (TM) Termlink",
+      "Password Required",
+      "Attempts Remaining",
+    ],
+    speed: 30,
+    waitUntilVisible: true,
+    cursor: true,
 
-  const fragment = document.createDocumentFragment();
+    // Start second typing effect after first one completes
+    afterComplete: (instance) => {
+      instance.destroy();
 
-  let previousSeenPassword;
+      // Add the correct game elements to the terminal
+      game.classList.add("flex", "gap-8");
+      terminal.appendChild(game);
 
-  for (let i = 0; i < output.length; i += TOTAL_CHARACTERS_PER_ROW) {
-    // Extract a row of characters
-    const chunk = output.slice(i, i + TOTAL_CHARACTERS_PER_ROW);
+      cipher.classList.add("columns-2", "gap-x-[1ch]");
+      game.appendChild(cipher);
 
-    const row = document.createElement("div");
+      game.appendChild(guessOutput);
 
-    // Every row must start with a random hexadecimal number
-    const randomHexadecimal = generateRandomHex(4);
+      // Get extra information from during the puzzle generation
+      const { output, passwordPositions, passwords } = puzzle;
 
-    const hexadecimalPrefix = document.createElement("span");
-    hexadecimalPrefix.innerHTML = `0x${randomHexadecimal} `;
+      const fragment = document.createDocumentFragment();
 
-    row.appendChild(hexadecimalPrefix);
+      let previousSeenPassword;
 
-    // Create a span for each character in each row
-    for (let j = 0; j < chunk.length; j++) {
-      const span = document.createElement("span");
+      for (let i = 0; i < output.length; i += TOTAL_CHARACTERS_PER_ROW) {
+        // Extract a row of characters
+        const chunk = output.slice(i, i + TOTAL_CHARACTERS_PER_ROW);
 
-      span.innerHTML = chunk[j];
+        const row = document.createElement("div");
 
-      // If the current character isn't a special character, that means it is part of a word
-      if (!SPECIAL_CHARACTERS.includes(chunk[j])) {
-        // Password will only return the correct password for the first character/index of that word, so we store it for the rest of a wodr until password is redefined
-        const password = passwords[passwordPositions.indexOf(i + j)];
+        // Every row must start with a random hexadecimal number
+        const randomHexadecimal = generateRandomHex(4);
 
-        if (password) previousSeenPassword = password;
+        const hexadecimalPrefix = document.createElement("span");
+        hexadecimalPrefix.innerHTML = `0x${randomHexadecimal}`;
+        hexadecimalPrefix.classList.add("mr-[1ch]");
 
-        // Set attribute for grouping and event listeners
-        span.dataset.password = password || previousSeenPassword;
+        row.appendChild(hexadecimalPrefix);
 
-        span.classList.add(
-          "cursor-pointer",
-          "transition",
-          "duration-150",
-          "ease-linear",
-          "uppercase",
-        );
+        // Create a span for each character in each row
+        for (let j = 0; j < chunk.length; j++) {
+          const span = document.createElement("span");
+
+          span.innerHTML = chunk[j];
+
+          // If the current character isn't a special character, that means it is part of a word
+          if (!SPECIAL_CHARACTERS.includes(chunk[j])) {
+            // Password will only return the correct password for the first character/index of that word, so we store it for the rest of a wodr until password is redefined
+            const password = passwords[passwordPositions.indexOf(i + j)];
+
+            if (password) previousSeenPassword = password;
+
+            // Set attribute for grouping and event listeners
+            span.dataset.password = password || previousSeenPassword;
+
+            span.classList.add(
+              "cursor-pointer",
+              "transition",
+              "duration-150",
+              "ease-linear",
+              "uppercase",
+            );
+          }
+
+          row.appendChild(span);
+        }
+
+        fragment.appendChild(row);
+
+        // Create typing effect as the puzzle is generated
+        typer(row, {
+          strings: [],
+          speed: randomNumberGenerator(30, 45),
+          cursor: false,
+        });
       }
 
-      row.appendChild(span);
-    }
-
-    fragment.appendChild(row);
-
-    // Create typing effect as the puzzle is generated
-
-    typer(row, {
-      strings: [],
-      speed: randomNumberGenerator(30, 45),
-      cursor: false,
-    });
-  }
-
-  terminalScreen.appendChild(fragment);
+      cipher.appendChild(fragment);
+    },
+  });
 };
 
 const checkWordLikeness = (guess, target) => {
@@ -179,29 +212,22 @@ const checkWordLikeness = (guess, target) => {
   return likeness;
 };
 
-const handlePasswordHover = (e, hovering) => {
+const handleHover = (e, hovering) => {
   const target = e.target;
 
-  if (!target.hasAttribute("data-password")) return;
+  if (target.nodeName !== "SPAN") return;
 
-  // If hovering over a password
   const password = target.dataset.password;
 
-  // Get all the character spans
-  const relatedSpans = Array.from(
-    document.querySelectorAll(`[data-password=${password}]`),
-  );
+  const relatedSpans = password
+    ? Array.from(document.querySelectorAll(`[data-password=${password}]`))
+    : [target];
 
-  // Add or remove hovering classes
-  if (hovering) {
-    relatedSpans.forEach((span) =>
-      span.classList.add("bg-[#5bf870]", "text-[#05321e]"),
-    );
-  } else {
-    relatedSpans.forEach((span) =>
-      span.classList.remove("bg-[#5bf870]", "text-[#05321e]"),
-    );
-  }
+  relatedSpans.forEach((span) =>
+    hovering
+      ? span.classList.add("bg-[#5bf870]", "text-[#05321e]")
+      : span.classList.remove("bg-[#5bf870]", "text-[#05321e]"),
+  );
 };
 
 const handlePasswordGuess = (e, puzzle) => {
@@ -221,7 +247,7 @@ const handlePasswordGuess = (e, puzzle) => {
   if (selectedPassword === correctPassword) {
     const successMessage = document.createElement("div");
     successMessage.innerHTML = "Terminal unlocked";
-    terminalOutput.append(successMessage);
+    guessOutput.append(successMessage);
 
     return;
   }
@@ -241,24 +267,35 @@ const handlePasswordGuess = (e, puzzle) => {
   guess.classList.add("uppercase");
 
   // Append them
-  terminalOutput.appendChild(guess);
-  terminalOutput.appendChild(response);
-  terminalOutput.appendChild(likenessResponse);
+  guessOutput.appendChild(guess);
+  guessOutput.appendChild(response);
+  guessOutput.appendChild(likenessResponse);
 
   attemptCount -= 1;
-
-  // Delete the last child of the attempt squares
-  attemptsCounter.removeChild(attemptsCounter.lastElementChild);
 
   if (attemptCount === 0) handleTerminalLockout();
 };
 
 const handleTerminalLockout = () => {
-  const lockout = document.createElement("div");
+  terminal.innerHTML = "";
 
-  lockout.innerHTML = "Terminal locked";
+  const lockOutMessage = document.createElement("p");
+  lockOutMessage.innerHTML = "TERMINAL LOCKED";
 
-  terminalOutput.appendChild(lockout);
+  const secondaryLockoutMessage = document.createElement("p");
+  secondaryLockoutMessage.innerHTML = "PLEASE CONTACT AN ADMINISTRATOR";
+
+  terminal.appendChild(lockOutMessage);
+  terminal.appendChild(secondaryLockoutMessage);
+
+  terminal.classList.add(
+    "flex",
+    "flex-col",
+    "gap-4",
+    "justify-center",
+    "items-center",
+    "min-h-[calc(100vh-72px-72px)]",
+  );
 };
 
 export const initializeHackerGame = () => {
@@ -269,17 +306,11 @@ export const initializeHackerGame = () => {
 
   // Add appropriate event listeners
 
-  terminalScreen.addEventListener("mouseover", (e) =>
-    handlePasswordHover(e, true),
-  );
+  cipher.addEventListener("mouseover", (e) => handleHover(e, true));
 
-  terminalScreen.addEventListener("mouseout", (e) =>
-    handlePasswordHover(e, false),
-  );
+  cipher.addEventListener("mouseout", (e) => handleHover(e, false));
 
-  terminalScreen.addEventListener("click", (e) =>
-    handlePasswordGuess(e, puzzle),
-  );
+  cipher.addEventListener("click", (e) => handlePasswordGuess(e, puzzle));
 
   return puzzle;
 };

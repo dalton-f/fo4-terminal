@@ -90,5 +90,17 @@ export const generateRandomHex = (size) =>
   ).join("");
 
 export const typer = (container, options) => {
-  new TypeIt(container, options).go();
+  const instance = new TypeIt(container, options);
+
+  instance.go();
+
+  return instance;
 };
+
+/**
+ * Creates a promise that resolves after a specified delay.
+ *
+ * @param {number} ms - Delay in milliseconds.
+ * @returns {Promise<void>} A promise that resolves after the delay.
+ */
+export const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));

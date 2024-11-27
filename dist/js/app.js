@@ -9,7 +9,13 @@
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _components_hacker__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components/hacker */ "./src/js/components/hacker.js");
+/* harmony import */ var _components_boot_sequence__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./components/boot_sequence */ "./src/js/components/boot_sequence.js");
+/* harmony import */ var _components_hacker__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./components/hacker */ "./src/js/components/hacker.js");
+/* harmony import */ var _components_utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./components/utils */ "./src/js/components/utils.js");
+function _typeof(o) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) { return typeof o; } : function (o) { return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o; }, _typeof(o); }
+function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return e; }; var t, e = {}, r = Object.prototype, n = r.hasOwnProperty, o = Object.defineProperty || function (t, e, r) { t[e] = r.value; }, i = "function" == typeof Symbol ? Symbol : {}, a = i.iterator || "@@iterator", c = i.asyncIterator || "@@asyncIterator", u = i.toStringTag || "@@toStringTag"; function define(t, e, r) { return Object.defineProperty(t, e, { value: r, enumerable: !0, configurable: !0, writable: !0 }), t[e]; } try { define({}, ""); } catch (t) { define = function define(t, e, r) { return t[e] = r; }; } function wrap(t, e, r, n) { var i = e && e.prototype instanceof Generator ? e : Generator, a = Object.create(i.prototype), c = new Context(n || []); return o(a, "_invoke", { value: makeInvokeMethod(t, r, c) }), a; } function tryCatch(t, e, r) { try { return { type: "normal", arg: t.call(e, r) }; } catch (t) { return { type: "throw", arg: t }; } } e.wrap = wrap; var h = "suspendedStart", l = "suspendedYield", f = "executing", s = "completed", y = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var p = {}; define(p, a, function () { return this; }); var d = Object.getPrototypeOf, v = d && d(d(values([]))); v && v !== r && n.call(v, a) && (p = v); var g = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(p); function defineIteratorMethods(t) { ["next", "throw", "return"].forEach(function (e) { define(t, e, function (t) { return this._invoke(e, t); }); }); } function AsyncIterator(t, e) { function invoke(r, o, i, a) { var c = tryCatch(t[r], t, o); if ("throw" !== c.type) { var u = c.arg, h = u.value; return h && "object" == _typeof(h) && n.call(h, "__await") ? e.resolve(h.__await).then(function (t) { invoke("next", t, i, a); }, function (t) { invoke("throw", t, i, a); }) : e.resolve(h).then(function (t) { u.value = t, i(u); }, function (t) { return invoke("throw", t, i, a); }); } a(c.arg); } var r; o(this, "_invoke", { value: function value(t, n) { function callInvokeWithMethodAndArg() { return new e(function (e, r) { invoke(t, n, e, r); }); } return r = r ? r.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(e, r, n) { var o = h; return function (i, a) { if (o === f) throw Error("Generator is already running"); if (o === s) { if ("throw" === i) throw a; return { value: t, done: !0 }; } for (n.method = i, n.arg = a;;) { var c = n.delegate; if (c) { var u = maybeInvokeDelegate(c, n); if (u) { if (u === y) continue; return u; } } if ("next" === n.method) n.sent = n._sent = n.arg;else if ("throw" === n.method) { if (o === h) throw o = s, n.arg; n.dispatchException(n.arg); } else "return" === n.method && n.abrupt("return", n.arg); o = f; var p = tryCatch(e, r, n); if ("normal" === p.type) { if (o = n.done ? s : l, p.arg === y) continue; return { value: p.arg, done: n.done }; } "throw" === p.type && (o = s, n.method = "throw", n.arg = p.arg); } }; } function maybeInvokeDelegate(e, r) { var n = r.method, o = e.iterator[n]; if (o === t) return r.delegate = null, "throw" === n && e.iterator["return"] && (r.method = "return", r.arg = t, maybeInvokeDelegate(e, r), "throw" === r.method) || "return" !== n && (r.method = "throw", r.arg = new TypeError("The iterator does not provide a '" + n + "' method")), y; var i = tryCatch(o, e.iterator, r.arg); if ("throw" === i.type) return r.method = "throw", r.arg = i.arg, r.delegate = null, y; var a = i.arg; return a ? a.done ? (r[e.resultName] = a.value, r.next = e.nextLoc, "return" !== r.method && (r.method = "next", r.arg = t), r.delegate = null, y) : a : (r.method = "throw", r.arg = new TypeError("iterator result is not an object"), r.delegate = null, y); } function pushTryEntry(t) { var e = { tryLoc: t[0] }; 1 in t && (e.catchLoc = t[1]), 2 in t && (e.finallyLoc = t[2], e.afterLoc = t[3]), this.tryEntries.push(e); } function resetTryEntry(t) { var e = t.completion || {}; e.type = "normal", delete e.arg, t.completion = e; } function Context(t) { this.tryEntries = [{ tryLoc: "root" }], t.forEach(pushTryEntry, this), this.reset(!0); } function values(e) { if (e || "" === e) { var r = e[a]; if (r) return r.call(e); if ("function" == typeof e.next) return e; if (!isNaN(e.length)) { var o = -1, i = function next() { for (; ++o < e.length;) if (n.call(e, o)) return next.value = e[o], next.done = !1, next; return next.value = t, next.done = !0, next; }; return i.next = i; } } throw new TypeError(_typeof(e) + " is not iterable"); } return GeneratorFunction.prototype = GeneratorFunctionPrototype, o(g, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), o(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, u, "GeneratorFunction"), e.isGeneratorFunction = function (t) { var e = "function" == typeof t && t.constructor; return !!e && (e === GeneratorFunction || "GeneratorFunction" === (e.displayName || e.name)); }, e.mark = function (t) { return Object.setPrototypeOf ? Object.setPrototypeOf(t, GeneratorFunctionPrototype) : (t.__proto__ = GeneratorFunctionPrototype, define(t, u, "GeneratorFunction")), t.prototype = Object.create(g), t; }, e.awrap = function (t) { return { __await: t }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, c, function () { return this; }), e.AsyncIterator = AsyncIterator, e.async = function (t, r, n, o, i) { void 0 === i && (i = Promise); var a = new AsyncIterator(wrap(t, r, n, o), i); return e.isGeneratorFunction(r) ? a : a.next().then(function (t) { return t.done ? t.value : a.next(); }); }, defineIteratorMethods(g), define(g, u, "Generator"), define(g, a, function () { return this; }), define(g, "toString", function () { return "[object Generator]"; }), e.keys = function (t) { var e = Object(t), r = []; for (var n in e) r.push(n); return r.reverse(), function next() { for (; r.length;) { var t = r.pop(); if (t in e) return next.value = t, next.done = !1, next; } return next.done = !0, next; }; }, e.values = values, Context.prototype = { constructor: Context, reset: function reset(e) { if (this.prev = 0, this.next = 0, this.sent = this._sent = t, this.done = !1, this.delegate = null, this.method = "next", this.arg = t, this.tryEntries.forEach(resetTryEntry), !e) for (var r in this) "t" === r.charAt(0) && n.call(this, r) && !isNaN(+r.slice(1)) && (this[r] = t); }, stop: function stop() { this.done = !0; var t = this.tryEntries[0].completion; if ("throw" === t.type) throw t.arg; return this.rval; }, dispatchException: function dispatchException(e) { if (this.done) throw e; var r = this; function handle(n, o) { return a.type = "throw", a.arg = e, r.next = n, o && (r.method = "next", r.arg = t), !!o; } for (var o = this.tryEntries.length - 1; o >= 0; --o) { var i = this.tryEntries[o], a = i.completion; if ("root" === i.tryLoc) return handle("end"); if (i.tryLoc <= this.prev) { var c = n.call(i, "catchLoc"), u = n.call(i, "finallyLoc"); if (c && u) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } else if (c) { if (this.prev < i.catchLoc) return handle(i.catchLoc, !0); } else { if (!u) throw Error("try statement without catch or finally"); if (this.prev < i.finallyLoc) return handle(i.finallyLoc); } } } }, abrupt: function abrupt(t, e) { for (var r = this.tryEntries.length - 1; r >= 0; --r) { var o = this.tryEntries[r]; if (o.tryLoc <= this.prev && n.call(o, "finallyLoc") && this.prev < o.finallyLoc) { var i = o; break; } } i && ("break" === t || "continue" === t) && i.tryLoc <= e && e <= i.finallyLoc && (i = null); var a = i ? i.completion : {}; return a.type = t, a.arg = e, i ? (this.method = "next", this.next = i.finallyLoc, y) : this.complete(a); }, complete: function complete(t, e) { if ("throw" === t.type) throw t.arg; return "break" === t.type || "continue" === t.type ? this.next = t.arg : "return" === t.type ? (this.rval = this.arg = t.arg, this.method = "return", this.next = "end") : "normal" === t.type && e && (this.next = e), y; }, finish: function finish(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.finallyLoc === t) return this.complete(r.completion, r.afterLoc), resetTryEntry(r), y; } }, "catch": function _catch(t) { for (var e = this.tryEntries.length - 1; e >= 0; --e) { var r = this.tryEntries[e]; if (r.tryLoc === t) { var n = r.completion; if ("throw" === n.type) { var o = n.arg; resetTryEntry(r); } return o; } } throw Error("illegal catch attempt"); }, delegateYield: function delegateYield(e, r, n) { return this.delegate = { iterator: values(e), resultName: r, nextLoc: n }, "next" === this.method && (this.arg = t), y; } }, e; }
+function asyncGeneratorStep(n, t, e, r, o, a, c) { try { var i = n[a](c), u = i.value; } catch (n) { return void e(n); } i.done ? t(u) : Promise.resolve(u).then(r, o); }
+function _asyncToGenerator(n) { return function () { var t = this, e = arguments; return new Promise(function (r, o) { var a = n.apply(t, e); function _next(n) { asyncGeneratorStep(a, r, o, _next, _throw, "next", n); } function _throw(n) { asyncGeneratorStep(a, r, o, _next, _throw, "throw", n); } _next(void 0); }); }; }
 // INFO + CONTEXT
 
 // Terminals in the Fallout francise include a gameplay mechanic/minigame "Hacking" to unlock the terminals. The game has similariies to the board game "Mastermind",
@@ -23,9 +29,67 @@ __webpack_require__.r(__webpack_exports__);
 // Successfully hacking a terminal may allow one to: access information, disable or enable turrets or spotlights, alarm systems, and various other defenses or traps, open locked doors or safes.
 
 
+
+
+var terminal = document.getElementById("terminal");
 document.addEventListener("DOMContentLoaded", function () {
-  (0,_components_hacker__WEBPACK_IMPORTED_MODULE_0__.initializeHackerGame)();
+  // Trigger the boot sequence
+  var bootInstance = (0,_components_boot_sequence__WEBPACK_IMPORTED_MODULE_0__.bootSequence)();
+
+  // Every 100ms check to see if the boot sequence is completed
+  var temporaryInterval = setInterval(/*#__PURE__*/_asyncToGenerator(/*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+    return _regeneratorRuntime().wrap(function _callee$(_context) {
+      while (1) switch (_context.prev = _context.next) {
+        case 0:
+          if (!bootInstance.is("completed")) {
+            _context.next = 6;
+            break;
+          }
+          // Clear the interval
+          clearInterval(temporaryInterval);
+
+          // Wait for a small delay before clearing the terminal
+          _context.next = 4;
+          return (0,_components_utils__WEBPACK_IMPORTED_MODULE_2__.delay)(700);
+        case 4:
+          // Clear the terminal
+          terminal.innerHTML = "";
+
+          // Trigger the game
+          (0,_components_hacker__WEBPACK_IMPORTED_MODULE_1__.initializeHackerGame)();
+        case 6:
+        case "end":
+          return _context.stop();
+      }
+    }, _callee);
+  })), 100);
 });
+
+/***/ }),
+
+/***/ "./src/js/components/boot_sequence.js":
+/*!********************************************!*\
+  !*** ./src/js/components/boot_sequence.js ***!
+  \********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   bootSequence: () => (/* binding */ bootSequence)
+/* harmony export */ });
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./utils */ "./src/js/components/utils.js");
+
+var terminal = document.getElementById("terminal");
+var bootSequence = function bootSequence() {
+  return (0,_utils__WEBPACK_IMPORTED_MODULE_0__.typer)(terminal, {
+    strings: ["Welcome to ROBCO Industries (TM) Termlink", ">SET TERMINAL/INQUIRE", "RX-9000", ">SET FILE/PROTECTION=OWNER:RWED ACCOUNTS.F", ">SET HALT RESTART/MAINT", "Initializing RobCo Industries(TM) MF Boot Agent v2.3.0", "RETRO BIOS", "RBIOS-4.02.08.00 52EE5.E7.E8", "Copyright 2075-2077 RobCo Ind.", "Uppermem: 1024 KB", "Root (5A8)", "Maintenance Mode", ">RUN DEBUG/ACCOUNTS.F"],
+    speed: 30,
+    breakLines: true,
+    waitUntilVisible: true,
+    cursor: true
+  });
+};
 
 /***/ }),
 
@@ -44,9 +108,16 @@ __webpack_require__.r(__webpack_exports__);
 // VARS + IMPORTS
 
 
-var terminalScreen = document.getElementById("terminal-screen");
-var terminalOutput = document.getElementById("terminal-output");
-var attemptsCounter = document.getElementById("attempts");
+var terminal = document.getElementById("terminal");
+
+// Add new container for the game
+var game = document.createElement("div");
+
+// Add a container for the puzzle
+var cipher = document.createElement("div");
+
+// Add a container for the guess output info
+var guessOutput = document.createElement("div");
 var attemptCount = 4;
 var SPECIAL_CHARACTERS = ["!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "-", "_", "[", "]", "{", "}", "<", ">", "|", "'", ";", ":", "/", "?", ",", ".", ";"];
 var TOTAL_CHARACTERS_PER_ROW = 12;
@@ -101,51 +172,70 @@ var generateHackablePuzzle = function generateHackablePuzzle() {
   };
 };
 var displayPuzzle = function displayPuzzle(puzzle) {
-  // Get extra information from during the puzzle generation
-  var output = puzzle.output,
-    passwordPositions = puzzle.passwordPositions,
-    passwords = puzzle.passwords;
-  var fragment = document.createDocumentFragment();
-  var previousSeenPassword;
-  for (var i = 0; i < output.length; i += TOTAL_CHARACTERS_PER_ROW) {
-    // Extract a row of characters
-    var chunk = output.slice(i, i + TOTAL_CHARACTERS_PER_ROW);
-    var row = document.createElement("div");
+  // Initial typing setup
+  (0,_utils__WEBPACK_IMPORTED_MODULE_0__.typer)(terminal, {
+    strings: ["Welcome to ROBCO Industries (TM) Termlink", "Password Required", "Attempts Remaining"],
+    speed: 30,
+    waitUntilVisible: true,
+    cursor: true,
+    // Start second typing effect after first one completes
+    afterComplete: function afterComplete(instance) {
+      instance.destroy();
 
-    // Every row must start with a random hexadecimal number
-    var randomHexadecimal = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.generateRandomHex)(4);
-    var hexadecimalPrefix = document.createElement("span");
-    hexadecimalPrefix.innerHTML = "0x".concat(randomHexadecimal, " ");
-    row.appendChild(hexadecimalPrefix);
+      // Add the correct game elements to the terminal
+      game.classList.add("flex", "gap-8");
+      terminal.appendChild(game);
+      cipher.classList.add("columns-2", "gap-x-[1ch]");
+      game.appendChild(cipher);
+      game.appendChild(guessOutput);
 
-    // Create a span for each character in each row
-    for (var j = 0; j < chunk.length; j++) {
-      var span = document.createElement("span");
-      span.innerHTML = chunk[j];
+      // Get extra information from during the puzzle generation
+      var output = puzzle.output,
+        passwordPositions = puzzle.passwordPositions,
+        passwords = puzzle.passwords;
+      var fragment = document.createDocumentFragment();
+      var previousSeenPassword;
+      for (var i = 0; i < output.length; i += TOTAL_CHARACTERS_PER_ROW) {
+        // Extract a row of characters
+        var chunk = output.slice(i, i + TOTAL_CHARACTERS_PER_ROW);
+        var row = document.createElement("div");
 
-      // If the current character isn't a special character, that means it is part of a word
-      if (!SPECIAL_CHARACTERS.includes(chunk[j])) {
-        // Password will only return the correct password for the first character/index of that word, so we store it for the rest of a wodr until password is redefined
-        var password = passwords[passwordPositions.indexOf(i + j)];
-        if (password) previousSeenPassword = password;
+        // Every row must start with a random hexadecimal number
+        var randomHexadecimal = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.generateRandomHex)(4);
+        var hexadecimalPrefix = document.createElement("span");
+        hexadecimalPrefix.innerHTML = "0x".concat(randomHexadecimal);
+        hexadecimalPrefix.classList.add("mr-[1ch]");
+        row.appendChild(hexadecimalPrefix);
 
-        // Set attribute for grouping and event listeners
-        span.dataset.password = password || previousSeenPassword;
-        span.classList.add("cursor-pointer", "transition", "duration-150", "ease-linear", "uppercase");
+        // Create a span for each character in each row
+        for (var j = 0; j < chunk.length; j++) {
+          var span = document.createElement("span");
+          span.innerHTML = chunk[j];
+
+          // If the current character isn't a special character, that means it is part of a word
+          if (!SPECIAL_CHARACTERS.includes(chunk[j])) {
+            // Password will only return the correct password for the first character/index of that word, so we store it for the rest of a wodr until password is redefined
+            var password = passwords[passwordPositions.indexOf(i + j)];
+            if (password) previousSeenPassword = password;
+
+            // Set attribute for grouping and event listeners
+            span.dataset.password = password || previousSeenPassword;
+            span.classList.add("cursor-pointer", "transition", "duration-150", "ease-linear", "uppercase");
+          }
+          row.appendChild(span);
+        }
+        fragment.appendChild(row);
+
+        // Create typing effect as the puzzle is generated
+        (0,_utils__WEBPACK_IMPORTED_MODULE_0__.typer)(row, {
+          strings: [],
+          speed: (0,_utils__WEBPACK_IMPORTED_MODULE_0__.randomNumberGenerator)(30, 45),
+          cursor: false
+        });
       }
-      row.appendChild(span);
+      cipher.appendChild(fragment);
     }
-    fragment.appendChild(row);
-
-    // Create typing effect as the puzzle is generated
-
-    (0,_utils__WEBPACK_IMPORTED_MODULE_0__.typer)(row, {
-      strings: [],
-      speed: (0,_utils__WEBPACK_IMPORTED_MODULE_0__.randomNumberGenerator)(30, 45),
-      cursor: false
-    });
-  }
-  terminalScreen.appendChild(fragment);
+  });
 };
 var checkWordLikeness = function checkWordLikeness(guess, target) {
   var likeness = 0;
@@ -154,26 +244,14 @@ var checkWordLikeness = function checkWordLikeness(guess, target) {
   }
   return likeness;
 };
-var handlePasswordHover = function handlePasswordHover(e, hovering) {
+var handleHover = function handleHover(e, hovering) {
   var target = e.target;
-  if (!target.hasAttribute("data-password")) return;
-
-  // If hovering over a password
+  if (target.nodeName !== "SPAN") return;
   var password = target.dataset.password;
-
-  // Get all the character spans
-  var relatedSpans = Array.from(document.querySelectorAll("[data-password=".concat(password, "]")));
-
-  // Add or remove hovering classes
-  if (hovering) {
-    relatedSpans.forEach(function (span) {
-      return span.classList.add("bg-[#5bf870]", "text-[#05321e]");
-    });
-  } else {
-    relatedSpans.forEach(function (span) {
-      return span.classList.remove("bg-[#5bf870]", "text-[#05321e]");
-    });
-  }
+  var relatedSpans = password ? Array.from(document.querySelectorAll("[data-password=".concat(password, "]"))) : [target];
+  relatedSpans.forEach(function (span) {
+    return hovering ? span.classList.add("bg-[#5bf870]", "text-[#05321e]") : span.classList.remove("bg-[#5bf870]", "text-[#05321e]");
+  });
 };
 var handlePasswordGuess = function handlePasswordGuess(e, puzzle) {
   var target = e.target;
@@ -190,7 +268,7 @@ var handlePasswordGuess = function handlePasswordGuess(e, puzzle) {
   if (selectedPassword === correctPassword) {
     var successMessage = document.createElement("div");
     successMessage.innerHTML = "Terminal unlocked";
-    terminalOutput.append(successMessage);
+    guessOutput.append(successMessage);
     return;
   }
 
@@ -207,19 +285,21 @@ var handlePasswordGuess = function handlePasswordGuess(e, puzzle) {
   guess.classList.add("uppercase");
 
   // Append them
-  terminalOutput.appendChild(guess);
-  terminalOutput.appendChild(response);
-  terminalOutput.appendChild(likenessResponse);
+  guessOutput.appendChild(guess);
+  guessOutput.appendChild(response);
+  guessOutput.appendChild(likenessResponse);
   attemptCount -= 1;
-
-  // Delete the last child of the attempt squares
-  attemptsCounter.removeChild(attemptsCounter.lastElementChild);
   if (attemptCount === 0) handleTerminalLockout();
 };
 var handleTerminalLockout = function handleTerminalLockout() {
-  var lockout = document.createElement("div");
-  lockout.innerHTML = "Terminal locked";
-  terminalOutput.appendChild(lockout);
+  terminal.innerHTML = "";
+  var lockOutMessage = document.createElement("p");
+  lockOutMessage.innerHTML = "TERMINAL LOCKED";
+  var secondaryLockoutMessage = document.createElement("p");
+  secondaryLockoutMessage.innerHTML = "PLEASE CONTACT AN ADMINISTRATOR";
+  terminal.appendChild(lockOutMessage);
+  terminal.appendChild(secondaryLockoutMessage);
+  terminal.classList.add("flex", "flex-col", "gap-4", "justify-center", "items-center", "min-h-[calc(100vh-72px-72px)]");
 };
 var initializeHackerGame = function initializeHackerGame() {
   var puzzle = generateHackablePuzzle();
@@ -229,13 +309,13 @@ var initializeHackerGame = function initializeHackerGame() {
 
   // Add appropriate event listeners
 
-  terminalScreen.addEventListener("mouseover", function (e) {
-    return handlePasswordHover(e, true);
+  cipher.addEventListener("mouseover", function (e) {
+    return handleHover(e, true);
   });
-  terminalScreen.addEventListener("mouseout", function (e) {
-    return handlePasswordHover(e, false);
+  cipher.addEventListener("mouseout", function (e) {
+    return handleHover(e, false);
   });
-  terminalScreen.addEventListener("click", function (e) {
+  cipher.addEventListener("click", function (e) {
     return handlePasswordGuess(e, puzzle);
   });
   return puzzle;
@@ -252,6 +332,7 @@ var initializeHackerGame = function initializeHackerGame() {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   delay: () => (/* binding */ delay),
 /* harmony export */   generateRandomHex: () => (/* binding */ generateRandomHex),
 /* harmony export */   generateRandomWords: () => (/* binding */ generateRandomWords),
 /* harmony export */   multipleRandomNumberGenerator: () => (/* binding */ multipleRandomNumberGenerator),
@@ -353,7 +434,21 @@ var generateRandomHex = function generateRandomHex(size) {
   }).join("");
 };
 var typer = function typer(container, options) {
-  new typeit__WEBPACK_IMPORTED_MODULE_1__["default"](container, options).go();
+  var instance = new typeit__WEBPACK_IMPORTED_MODULE_1__["default"](container, options);
+  instance.go();
+  return instance;
+};
+
+/**
+ * Creates a promise that resolves after a specified delay.
+ *
+ * @param {number} ms - Delay in milliseconds.
+ * @returns {Promise<void>} A promise that resolves after the delay.
+ */
+var delay = function delay(ms) {
+  return new Promise(function (resolve) {
+    return setTimeout(resolve, ms);
+  });
 };
 
 /***/ }),

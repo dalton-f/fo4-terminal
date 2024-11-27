@@ -10,8 +10,30 @@
 // Finding complete sets of brackets within the garble on one row either removes incorrect/dud words or resets your attempts
 // Successfully hacking a terminal may allow one to: access information, disable or enable turrets or spotlights, alarm systems, and various other defenses or traps, open locked doors or safes.
 
+import { bootSequence } from "./components/boot_sequence";
 import { initializeHackerGame } from "./components/hacker";
+import { delay } from "./components/utils";
+
+const terminal = document.getElementById("terminal");
 
 document.addEventListener("DOMContentLoaded", () => {
-  initializeHackerGame();
+  // Trigger the boot sequence
+  const bootInstance = bootSequence();
+
+  // Every 100ms check to see if the boot sequence is completed
+  const temporaryInterval = setInterval(async () => {
+    if (bootInstance.is("completed")) {
+      // Clear the interval
+      clearInterval(temporaryInterval);
+
+      // Wait for a small delay before clearing the terminal
+      await delay(700);
+
+      // Clear the terminal
+      terminal.innerHTML = "";
+
+      // Trigger the game
+      initializeHackerGame();
+    }
+  }, 100);
 });
